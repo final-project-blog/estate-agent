@@ -12,8 +12,13 @@ const SignUp = () => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
   }
   const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
-    e.preventDefault()
+    if (!formData.username || !formData.email || !formData.password) {
+      setError("All fields are required.");
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch("api/auth/signup",
     {
@@ -36,6 +41,7 @@ const SignUp = () => {
     setLoading(false);
   }
   }
+  const isFormValid = formData.username && formData.email && formData.password;
   return (
     <div className="p-5 max-w-lg mx-auto">
       <h1 className="text-3xl text-center font-semibold my-10">Sign Up</h1>
@@ -46,8 +52,10 @@ const SignUp = () => {
           className="border p-3 rounded-lg " id="email" onChange={handleChange} />
         <input type="password" placeholder="Write a strong password"
           className="border p-3 rounded-lg " id="password" onChange={handleChange} />
-        <button disabled={loading} className="bg-slate-700 text-white p-3 
-        rounded-lg uppercase hover:opacity-80">Sing UP</button>
+        {error && <p className="text-red-500">{error}</p>}
+        <button disabled={loading || !isFormValid}
+        className={`bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-80 ${!isFormValid || loading ? 'opacity-80 cursor-not-allowed' : ''}`}
+        >Sing UP</button>
       </form>
       <div className="flex gap-2 my-5">
         <p>Already have an account?</p> 

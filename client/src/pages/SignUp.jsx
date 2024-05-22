@@ -29,7 +29,7 @@ const SignUp = () => {
     const data = await res.json();
         
     if (data.success === false) {
-      setError(data.message);
+      setError("invalid Username or Email");
       setLoading(false);
       return;
     }

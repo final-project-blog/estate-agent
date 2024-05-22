@@ -1,16 +1,40 @@
-import { Link } from "react-router-dom"
-import { useState, useNavigate } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useState } from "react"
 
 
 const SignUp = () => {
 
   const [formData, setFormData] = useState({})
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
   }
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault()
-    console.log(formData)
+    try {
+      const res = await fetch("api/auth/signup",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    });
+    const data = await res.json();
+        
+    if (data.success === false) {
+      setError(data.message);
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    setError(null);
+    navigate("/signin");
+  } catch (error) {
+    setError(error.message);
+    setLoading(false);
+  }
   }
   return (
     <div className="p-5 max-w-lg mx-auto">
@@ -22,7 +46,7 @@ const SignUp = () => {
           className="border p-3 rounded-lg " id="email" onChange={handleChange} />
         <input type="password" placeholder="Write a strong password"
           className="border p-3 rounded-lg " id="password" onChange={handleChange} />
-        <button className="bg-slate-700 text-white p-3 
+        <button disabled={loading} className="bg-slate-700 text-white p-3 
         rounded-lg uppercase hover:opacity-80">Sing UP</button>
       </form>
       <div className="flex gap-2 my-5">

@@ -1,6 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import authRouter from './routes/auth.js';
+import authRouter from './routes/auth.route.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -16,7 +16,8 @@ const app = express();
 
 app.use(express.json());
 
-app.use('/auth', authRouter);
+
+app.use('/api/auth', authRouter);
 
 app.use((err, req, res, next) => {
     const statusCode = res.statusCode || 500;

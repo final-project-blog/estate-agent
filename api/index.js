@@ -16,7 +16,7 @@ const app = express();
 
 app.use(express.json());
 
-
+app.use('/api/user' ,userRouter);s
 app.use('/api/auth', authRouter);
 
 app.use((err, req, res, next) => {

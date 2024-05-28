@@ -49,7 +49,7 @@ const signin = async (req, res, next) => {
   }, async (accessToken, refreshToken, profile, done) => {
     try {
       let user = await User.findOne({ googleId: profile.id });
-      const generatedPassword = math.random().toString().slice(-8);
+      const generatedPassword = Math.random().toString(36).split(-8)+Math.random().toString(36).split(-8);
       if (!user) {
         user = new User({
           googleId: profile.id,
@@ -78,7 +78,7 @@ const signin = async (req, res, next) => {
       if (!user) return res.redirect('/login');
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
       res.cookie('accesstoken', token, { httpOnly: true });
-      res.redirect('/');
+      res.redirect('http://localhost:5173');
     })(req, res, next);
   };
 

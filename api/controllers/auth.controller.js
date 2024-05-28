@@ -49,12 +49,13 @@ const signin = async (req, res, next) => {
   }, async (accessToken, refreshToken, profile, done) => {
     try {
       let user = await User.findOne({ googleId: profile.id });
-      
+      const generatedPassword = math.random().toString().slice(-8);
       if (!user) {
         user = new User({
           googleId: profile.id,
           username: profile.displayName,
           email: profile.emails[0].value,
+          password: generatedPassword,
           profilePicture: profile.photos[0].value
         });
         await user.save();
@@ -65,7 +66,8 @@ const signin = async (req, res, next) => {
       done(error, null);
     }
   }));
-  
+
+
   const google = (req, res, next) => {
     passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
   };

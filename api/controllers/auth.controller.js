@@ -1,9 +1,15 @@
 import User from "../models/user.model.js";
-import * as GoogleStrategy from 'passport-google-oauth20';
-import { errorHandler } from "../utils/errorHandler.js";
+import errorHandler from "../utills/error.js";
 import jwt from "jsonwebtoken";
+import passport from "passport";
+// import GoogleStrategy from 'passport-google-oauth20';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 
-export const signup = async (req, res, next) => {
+dotenv.config();
+
+const signup = async (req, res, next) => {
     const { username, email, password } = req.body;
         const newUser = new User({ username, email, password });
     try {
@@ -16,7 +22,7 @@ export const signup = async (req, res, next) => {
     
 };
 
-export const singin = async (req, res, next) => {
+const signin = async (req, res, next) => {
     const { email, password } = req.body;
     try {
       const validUser = await User.findOne({ email });
@@ -34,19 +40,46 @@ export const singin = async (req, res, next) => {
     }
   };
 
-export const google = async (req, res, next) => {
-    passport.use(new GoogleStrategy({
-        clientID: "3<YOUR_GoogleOAuthClientID_HERE>",
-        clientSecret: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-        callbackURL: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    },
-        function (accessToken, refreshToken, profile, cb) {
-            console.log(profile);
-            cb(null, profile);
-        }
-    ));
-    }
-}
 
-export default { signup };
+
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "/api/auth/google/callback"
+  }, async (accessToken, refreshToken, profile, done) => {
+    try {
+      let user = await User.findOne({ googleId: profile.id });
+      
+      if (!user) {
+        user = new User({
+          googleId: profile.id,
+          username: profile.displayName,
+          email: profile.emails[0].value,
+          profilePicture: profile.photos[0].value
+        });
+        await user.save();
+      }
+      
+      done(null, user);
+    } catch (error) {
+      done(error, null);
+    }
+  }));
+  
+  const google = (req, res, next) => {
+    passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+  };
+  
+  const googleCallback = (req, res, next) => {
+    passport.authenticate('google', { failureRedirect: '/login' }, (err, user, info) => {
+      if (err) return next(err);
+      if (!user) return res.redirect('/login');
+      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      res.cookie('accesstoken', token, { httpOnly: true });
+      res.redirect('/');
+    })(req, res, next);
+  };
+
+
+export { signup, signin, google, googleCallback };
 

@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import * as GoogleStrategy from 'passport-google-oauth20';
 
 export const signup = async (req, res, next) => {
     const { username, email, password } = req.body;
@@ -13,4 +14,19 @@ export const signup = async (req, res, next) => {
     
 };
 
+export const google = async (req, res, next) => {
+    passport.use(new GoogleStrategy({
+        clientID: "3<YOUR_GoogleOAuthClientID_HERE>",
+        clientSecret: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        callbackURL: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    },
+        function (accessToken, refreshToken, profile, cb) {
+            console.log(profile);
+            cb(null, profile);
+        }
+    ));
+    }
+}
+
 export default { signup };
+

@@ -4,7 +4,7 @@ import authRouter from './routes/auth.route.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-
+import listingRouter from './routes/listing.route.js';
 
 dotenv.config();
 
@@ -30,6 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/api/auth', authRouter);
+app.use('/api/listing', listingRouter);
 
 
 

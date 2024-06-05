@@ -5,7 +5,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import listingRouter from './routes/listing.route.js';
-
+import session from 'express-session';
+import passport from 'passport';
 dotenv.config();
 
 mongoose.connect(process.env.mongouri).then(() => {
@@ -27,6 +28,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: "Our little secret.",
+  resave: false,
+  saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 app.use('/api/auth', authRouter);

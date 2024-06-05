@@ -2,7 +2,6 @@ import User from "../models/user.model.js";
 import errorHandler from "../utills/error.js";
 import jwt from "jsonwebtoken";
 import passport from "passport";
-// import GoogleStrategy from 'passport-google-oauth20';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
@@ -46,13 +45,12 @@ const signin = async (req, res, next) => {
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: "/api/auth/google/callback"
-  }, 
+  },
 
-  function(accessToken, refreshToken, profile, cb) {
-    User.findOne({ googleId: profile.id }, (err, user) => {
-      if (err) { return cb(err); }
+  async function(accessToken, refreshToken, profile, cb) {
+    const user = await User.findOne({ googleId: profile.id });
       if (!user) {
-        // If user does not exist, create a new one
+        const generatedPassword = Math.random().toString(36).split(-8)+Math.random().toString(36).split(-8);
         const newUser = new User({
           googleId: profile.id,
           username: profile.displayName,
@@ -60,17 +58,18 @@ const signin = async (req, res, next) => {
           password: generatedPassword,
           profilePicture: profile.photos[0].value
         });
-        newUser.save((err, savedUser) => {
+        newUser.save((err, res, savedUser) => {
           if (err) { return cb(err); }
-          const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET);
-          return cb(null, token);
+          const { password: pass, ...rest } = savedUser._doc;
+          const user = json(rest);
+          return cb(null, user);
         });
       } else {
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-        return cb(null, token);
+        const { password: pass, ...rest } = user._doc;
+        return cb(null, user);
       }
-    });
-  }
+    }));
+
   // async (accessToken, refreshToken, profile, done) => {
   //   try {
   //     let user = await User.findOne({ googleId: profile.id });
@@ -91,18 +90,27 @@ const signin = async (req, res, next) => {
   //     done(error, null);
   //   }
   // }
-));
+// ));
   passport.serializeUser(function(user, done) {
     done(null, user.id); // Hier wird die Benutzer-ID in der Session gespeichert
   });
 
+  passport.deserializeUser(function(id, done) {
+    User.findById(id, function(err, user) {
+      done(err, user); // Hier wird der Benutzer aus der Session ausgelesen
+    });
+  });
   const google = (req, res, next) => {
     passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
   };
   
   const googleCallback = (req, res, next) => {
     passport.authenticate("google", { failureRedirect: "/login" })(req, res, () => {
-      res.redirect('http://localhost:5173');
+      const user = req.user;
+      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      console.log(user);
+      res.cookie('accesstoken', token, { httpOnly: true });
+      res.redirect('http://localhost:5173/');
   });
     // passport.authenticate('google', { failureRedirect: '/login' }, (err, user, info) => {
     //   if (err) return next(err);

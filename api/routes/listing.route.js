@@ -1,6 +1,6 @@
 import express from 'express';
-import { verifyToken } from '../utills/verifyUser';
-import { createListing } from '../controllers/listing.controller';
+import createListing from '../controllers/listing.controller.js';
+import verifyToken from '../utills/verifyToken.js';
 
 const routes = express.Router();
 

@@ -4,7 +4,7 @@ const About = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-600 text-white">
       <div className="bg-white bg-opacity-75 p-12 rounded-lg shadow-lg w-full max-w-2xl text-center">
-        <h2 className="text-4xl font-bold text-blue-700 mb-6">About Us</h2>
+        <h2 className="text-4xl font-bold text-blue-700 mb-4">About Us</h2>
         <p className="text-lg text-gray-800">
           At Estate Agent, we are dedicated to helping you find the perfect home. Our experienced team of real estate professionals is committed to providing exceptional service and personalized attention to meet all your real estate needs.
         </p>

@@ -13,11 +13,6 @@ const SignIn = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // if ( !formData.email || !formData.password) {
-    //   setError("All fields are required.");
-    //   setLoading(false);
-    //   return;
-    // }
     try {
       const res = await fetch("api/auth/signin", {
         method: "POST",
@@ -39,7 +34,6 @@ const SignIn = () => {
       setLoading(false);
     }
   };
-  const isFormValid = formData.username && formData.email && formData.password;
   return (
     <div className="p-5 max-w-lg mx-auto">
       <h1 className="text-3xl text-center font-semibold my-10">Sign In</h1>
@@ -61,7 +55,7 @@ const SignIn = () => {
         {error && <p className="text-red-500">{error}</p>}
         <button
           disabled={loading}
-          className={`bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-80 ${
+          className={`bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90 ${
             loading ? "opacity-80" : ""
           }`}
         >

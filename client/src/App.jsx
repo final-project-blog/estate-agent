@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from "./pages/Home"
+import { ThemeProvider } from './context/ThemeContext';
 import About from "./pages/About"
 import Profile from "./pages/Profile"
 import Header from "./components/Header"
@@ -9,7 +10,8 @@ import CreateListing from "./pages/CreateListing"
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <ThemeProvider>
+      <Router>
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -19,7 +21,8 @@ const App = () => {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/create-listing" element={<CreateListing />} />
       </Routes>
-    </BrowserRouter>
+     </Router>
+    </ThemeProvider>
   )
 }
 // const router = createBrowserRouter(
@@ -40,4 +43,4 @@ const App = () => {
 // }
 
 
-export default App
+export default App;

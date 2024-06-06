@@ -1,5 +1,6 @@
 import { FaSearch } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import ThemeSwitcher from './ThemeSwitcher';
 
 export default function Header() {
   return (

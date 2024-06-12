@@ -52,7 +52,7 @@ app.use((err, req, res, next) => {
         message,
     });
 });
-
-app.listen(3000, () => {
-  console.log('Server started on port 3000');
+const PORT = process.env.PORT || 3000; // Ändern Sie 3000 zu 3001 oder einem anderen freien Port
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

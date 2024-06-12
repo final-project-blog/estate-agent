@@ -10,11 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.592.0",
+    "@aws-sdk/s3-request-presigner": "^3.592.0",
+    "@vitejs/plugin-react": "^4.3.1",
     "google-auth-library": "^9.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-google-login": "^5.2.2",
-    "react-icon": "^1.0.0",
+    "react-icons": "^4.10.1",
     "react-router-dom": "^6.23.1"
   },
   "devDependencies": {

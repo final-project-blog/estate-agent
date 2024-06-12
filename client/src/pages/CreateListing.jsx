@@ -1,4 +1,30 @@
+import { useState } from "react";
+import axios from  "axios";
+
 const CreateListing = () => {
+
+    const [files, setFiles] = useState([]);
+    const [images, setImages] = useState([]);
+    const storeImage = async ({image}) => {
+        const formData = new FormData()
+        formData.append("image", image)
+        console.log(image)
+        console.log(formData)
+
+        const result = await axios.post('http://localhost:3000/api/images/upload', formData, {
+            headers: {
+                'Content-Type': 'form-data'
+            }
+        })
+        const imageInfo = await result.data
+        console.log("imageUrl:", imageInfo.imageUrl)
+        return imageInfo.imageUrl
+    }
+    const UploadImages = async () => {
+        const result = await storeImage({image: files[0]})
+        console.log(files[0])
+        setImages([result.image, ...images])
+    }
     return (
     <main className="p-3 max-w-4xl mx-auto">
         <h1 className="text-3xl font-semibold text-center my-7">
@@ -86,9 +112,9 @@ const CreateListing = () => {
                 <span className="font-normal text-gray-600 ml-2">The first Image will be the Cover</span>
                 </p>
                 <div className="flex gap-4">
-                    <input className="p-3 border border-gray-300 rounded w-full"
+                    <input onChange={(e)=> setFiles(e.target.files)} className="p-3 border border-gray-300 rounded w-full"
                     type="file" id="images" accept="image/*" multiple required/>
-                    <button className="p-3 text-green-700 border border-green-700 rounded
+                    <button type="button" onClick={UploadImages} className="p-3 text-green-700 border border-green-700 rounded
                     uppercase hover:shadow-lg disabled:opacity-80">Upload</button>
                 </div>
                 <button className="p-3 bg-slate-700 text-white rounded-lg

@@ -9,6 +9,7 @@ import CreateListing from "./pages/CreateListing"
 import { Provider } from "react-redux"
 import ReactDOM from "react-dom"
 import store from "./redux/store";
+import PrivateRoute from "./components/PrivateRoute"
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route element={<PrivateRoute />} />
         <Route path="/create-listing" element={<CreateListing />} />
       </Routes>
     </BrowserRouter>

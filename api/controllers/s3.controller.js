@@ -26,9 +26,11 @@ const uploadImage = async (req, res, next) => {
       Body: fileStream
     };
       const imageInfo = await s3.upload(uploadParams).promise();
-      console.log(imageInfo.Location);
-      res.status(200).send({ imageUrl: imageInfo.Location });
-      return imageInfo.Location; 
+      // console.log(imageInfo.Location);
+      // res.status(200).send({ imageUrl: imageInfo.Location });
+      console.log(imageInfo);
+      res.status(200).send({ imageKey: imageInfo.Key });
+      return imageInfo.Key; 
 };
 
 const downloadImage = (fileKey) => {

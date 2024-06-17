@@ -12,7 +12,7 @@ import multer from 'multer';
 
 dotenv.config();
 
-mongoose.connect(process.env.mongouri).then(() => {
+mongoose.connect(process.env.MONGO_URI).then(() => {
   console.log('Connected to MongoDB');
 })
 .catch((err) => {

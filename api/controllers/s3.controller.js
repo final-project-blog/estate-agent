@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import AWS from 'aws-sdk';
 import fs from 'fs-extra';
+import util from 'util';
 dotenv.config();
 
 const region = process.env.AWS_BUCKET_REGION;
@@ -15,10 +16,11 @@ const s3 = new AWS.S3({
   region
 });
 
+const unlinkFile = util.promisify(fs.unlink);
 
 const uploadImage = async (req, res, next) => {
     const file = req.file;
-    console.log(file);
+    // console.log(file);
     const fileStream = fs.createReadStream(file.path);
     const uploadParams = {
       Bucket: bucketName,
@@ -28,8 +30,9 @@ const uploadImage = async (req, res, next) => {
       const imageInfo = await s3.upload(uploadParams).promise();
       // console.log(imageInfo.Location);
       // res.status(200).send({ imageUrl: imageInfo.Location });
-      console.log(imageInfo);
+      // console.log(imageInfo);
       res.status(200).send({ imageKey: imageInfo.Key });
+      await unlinkFile(file.path);
       return imageInfo.Key; 
 };
 

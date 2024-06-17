@@ -8,8 +8,6 @@ const upload = multer({ dest: 'uploads/' });
 
 routes.post('/upload',upload.single("image"), uploadImage);
 routes.get('/download/:key', (req, res) => {
-    console.log("request:", req);
-    console.log("params:", req.params);
     const key = req.params.key;
     const readStream = downloadImage(key);
     return readStream.pipe(res);

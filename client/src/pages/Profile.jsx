@@ -1,29 +1,52 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { updateUserStart, updateUserSuccess, updateUserFailure } from '../redux/user/userSlice';
+import { useDispatch } from 'react-redux';
 
-
-
-export default function Profile({ currentUser, setCurrentUser }) {
+export default function Profile({ currentUser, loading, error }) {
   const [username, setUsername] = useState(currentUser?.username || '');
   const [email, setEmail] = useState(currentUser?.email || '');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSignOut = () => {
-    setCurrentUser(null);
-    // Hier können Sie auch zusätzliche Abmelde-Logik hinzufügen, z.B. Entfernen von Tokens
+    // Logic for signing out
+    // You might need to implement setCurrentUser or clear session/token here
     navigate('/sign-in');
   };
 
   const handleDeleteAccount = () => {
-    // Hier können Sie die Löschlogik für das Benutzerkonto hinzufügen
-    setCurrentUser(null);
+    // Logic for deleting account
+    // You might need to implement a delete account API call here
     navigate('/sign-in');
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    // Hier können Sie die Aktualisierungslogik für das Benutzerprofil hinzufügen
+    try {
+      dispatch(updateUserStart());
+      const formData = { username, email, password };
+      const response = await fetch(`/api/users/update/${currentUser._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      if (data.success === false) {
+        dispatch(updateUserFailure(data.message));
+      } else {
+        dispatch(updateUserSuccess(data));
+        // Optionally, update local state with updated user data
+        setUsername(data.username);
+        setEmail(data.email);
+      }
+    } catch (error) {
+      dispatch(updateUserFailure(error.message));
+    }
   };
 
   return (
@@ -56,10 +79,10 @@ export default function Profile({ currentUser, setCurrentUser }) {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button
-          type='submit'
+          disabled={loading}
           className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'
         >
-          update
+          {loading ? 'Loading...' : 'Update'}
         </button>
       </form>
       <div className="flex justify-between mt-5">
@@ -69,4 +92,3 @@ export default function Profile({ currentUser, setCurrentUser }) {
     </div>
   );
 }
-

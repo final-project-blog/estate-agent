@@ -8,17 +8,16 @@ const CreateListing = () => {
     const storeImage = async ({image}) => {
         const formData = new FormData()
         formData.append("image", image)
-        console.log(image)
-        console.log(formData)
+        // console.log(image)
+        // console.log(formData)
 
         const result = await axios.post('http://localhost:3000/api/images/upload', formData, {
             headers: {
                 'Content-Type': 'form-data'
             }
         })
-        const imageInfo = await result.data
-        console.log("imageUrl:", imageInfo.imageUrl)
-        return imageInfo.imageUrl
+        // console.log("imageKey:", result.data.imageKey)
+        return result.data.imageKey
     }
     const UploadImages = async () => {
         const result = await storeImage({image: files[0]})

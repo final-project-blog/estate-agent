@@ -7,7 +7,8 @@ import session from 'express-session';
 import passport from 'passport';
 import authRouter from './routes/auth.route.js';
 import listingRouter from './routes/listing.route.js';
-import s3UrlRouter from './routes/s3Url.route.js'; // Ensure correct path
+import s3UrlRouter from './routes/s3.route.js'; // Ensure correct path
+import multer from 'multer';
 
 dotenv.config();
 

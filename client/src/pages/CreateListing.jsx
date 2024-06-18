@@ -4,10 +4,12 @@ import axios from  "axios";
 const CreateListing = () => {
 
     const [files, setFiles] = useState([]);
-    const [formData, setFrameData] = useState({
+    const [formData, setFormData] = useState({
         imageKeys: [],
+        imageUrl: [],
     });
-    console.log("formData:" ,formData);
+    console.log("formData1:" ,formData);
+    const [imageUploadError, setImageUploadError] = useState(false)
     const storeImage = async ({image}) => {
         const formData = new FormData()
         formData.append("image", image)
@@ -22,17 +24,39 @@ const CreateListing = () => {
         // console.log("imageKey:", result.data.imageKey)
         return result.data.imageKey
     }
-    const UploadImages = () => {
-        if (files.length > 0 && files.length < 7) {
-        const promises = [];
-        for (let i = 0; i < files.length; i++) {
-            promises.push(storeImage({image: files[i]}))
-        }
-        Promise.all(promises).then((keys) => {
-            setFrameData({...formData, imageKeys: formData.imageKeys.concat(keys)})
-        })
+    const getDownloadUrl = async (fileKey) => {
+        const result = await axios.get(`http://localhost:3000/api/images/Url/${fileKey}`)
+        return result.data.imageUrl
     }
-}
+    const UploadImages = async () => {
+        // Ensure files is an array
+        if (files.length > 0 && files.length + formData.imageUrl.length < 7) {
+            try {
+                const keyPromises = [];
+                for (let i = 0; i < files.length; i++) {
+                    keyPromises.push(storeImage({ image: files[i] }));
+                }
+                const keys = await Promise.all(keyPromises);
+                const updatedKeys = formData.imageKeys.concat(keys);
+                setFormData(prevFormData => ({ ...prevFormData, imageKeys: updatedKeys }));
+    
+                const urlPromises = [];
+                for (let j = 0; j < updatedKeys.length; j++) {
+                    urlPromises.push(getDownloadUrl(updatedKeys[j]));
+                }
+                const urls = await Promise.all(urlPromises);
+                const updatedUrls = formData.imageUrl.concat(urls);
+                setFormData(prevFormData => ({ ...prevFormData, imageUrl: updatedUrls }));
+
+                setImageUploadError(false);
+            } catch (error) {
+                console.error("Error uploading images: ", error);
+                setImageUploadError("An error occurred while uploading images.");
+            }
+        } else {
+            setImageUploadError("You can only upload 6 images per listing.");
+        }
+    }
     return (
     <main className="p-3 max-w-4xl mx-auto">
         <h1 className="text-3xl font-semibold text-center my-7">
@@ -125,6 +149,15 @@ const CreateListing = () => {
                     <button type="button" onClick={UploadImages} className="p-3 text-green-700 border border-green-700 rounded
                     uppercase hover:shadow-lg disabled:opacity-80">Upload</button>
                 </div>
+                <p className="text-red-700 text-sm">{imageUploadError && imageUploadError}</p>
+                {
+                    formData.imageUrl.length > 0 && formData.imageUrl.map((url, index) => (
+                        <div key={index} className="flex justify-between p-3 border items-center">
+                            <img src={url} alt="listing image" className="w-20 h-20 object-contain rounded-lg" />
+                            <button type="button" className="p-3 text-red-700 rounded-lg uppercase hover:opacity-80">Delete</button>
+                        </div>
+                    ))
+                }
                 <button className="p-3 bg-slate-700 text-white rounded-lg
                 uppercase hover:opacity-90 disabled:opacity-75">Create Listing</button>
             </div>

@@ -56,6 +56,18 @@ const CreateListing = () => {
             setImageUploadError("You can only upload 6 images per listing.");
         }
     }
+
+    const handleRemoveImage = async (index) => {
+
+        await axios.delete(`http://localhost:3000/api/images/delete/${formData.imageKeys[index]}`)
+        console.log(formData.imageKeys[index])
+        setFormData({
+            ...formData,
+            imageKeys: formData.imageKeys.filter((_, i) => i !== index),
+            imageUrl: formData.imageUrl.filter((_, i) => i !== index),
+        })
+    };
+
     return (
     <main className="p-3 max-w-4xl mx-auto">
         <h1 className="text-3xl font-semibold text-center my-7">
@@ -153,7 +165,7 @@ const CreateListing = () => {
                     formData.imageUrl.length > 0 && formData.imageUrl.map((url, index) => (
                         <div key={index} className="flex justify-between p-3 border items-center">
                             <img src={url} alt="listing image" className="w-20 h-20 object-contain rounded-lg" />
-                            <button type="button" className="p-3 text-red-700 rounded-lg uppercase hover:opacity-80">Delete</button>
+                            <button type="button" onClick={()=> handleRemoveImage (index)} className="p-3 text-red-700 rounded-lg uppercase hover:opacity-80">Delete</button>
                         </div>
                     ))
                 }

@@ -8,12 +8,11 @@ import {
 } from '../redux/user/userSlice';
 
 export default function SignIn() {
-  const [formData, setFormData] = useState({});
-  const [localError, setLocalError] = useState(null); // Umbenennung von 'error' zu 'localError'
-  const [loading, setLoading] = useState(false);
-  const { loading: reduxLoading, error: reduxError } = useSelector((state) => state.user); // Umbenennung von 'error' zu 'reduxError'
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({});
+  const { loading, error } = useSelector((state) => state.user); 
+  
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -23,7 +22,6 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
       dispatch(signInStart());
       const res = await fetch('/api/auth/signin', {
         method: 'POST',
@@ -35,18 +33,12 @@ export default function SignIn() {
       const data = await res.json();
       console.log(data);
       if (data.success === false) {
-        setLoading(false);
-        setLocalError(data.message); // Verwendung von 'localError' anstelle von 'error'
         dispatch(signInFailure(data.message));
         return;
       }
-      setLoading(false);
-      setLocalError(null); // Verwendung von 'localError' anstelle von 'error'
       dispatch(signInSuccess(data));
       navigate('/');
     } catch (error) {
-      setLoading(false);
-      setLocalError(error.message); // Verwendung von 'localError' anstelle von 'error'
       dispatch(signInFailure(error.message));
     }
   };
@@ -81,8 +73,7 @@ export default function SignIn() {
           <span className='text-blue-700'>Sign up</span>
         </Link>
       </div>
-      {localError && <p className='text-red-500 mt-5'>{localError}</p>} {/* Verwendung von 'localError' anstelle von 'error' */}
-      {reduxError && <p className='text-red-500 mt-5'>{reduxError}</p>} {/* Verwendung von 'reduxError' anstelle von 'error' */}
+      {error && <p className='text-red-500 mt-5'>{error}</p>}
     </div>
   );
 }

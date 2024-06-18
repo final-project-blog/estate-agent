@@ -29,7 +29,6 @@ const CreateListing = () => {
         return result.data.imageUrl
     }
     const UploadImages = async () => {
-        // Ensure files is an array
         if (files.length > 0 && files.length + formData.imageUrl.length < 7) {
             try {
                 const keyPromises = [];

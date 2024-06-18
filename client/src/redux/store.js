@@ -5,11 +5,14 @@ import userReducer from '../redux/user/userSlice'; // Stelle sicher, dass der Pf
 const store = configureStore({
   reducer: {
     user: userReducer,
-    // Weitere Reducer hier hinzufügen, falls erforderlich
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
-export default store;
+export {store}
 
 
 

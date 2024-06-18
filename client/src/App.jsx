@@ -6,14 +6,10 @@ import Header from "./components/Header"
 import SignIn from "./pages/SignIn"
 import SignUp from "./pages/SignUp"
 import CreateListing from "./pages/CreateListing"
-import { Provider } from "react-redux"
-import ReactDOM from "react-dom"
-import store from "./redux/store";
 import PrivateRoute from "./components/PrivateRoute"
 
 const App = () => {
   return (
-   <Provider store={store}>
     <BrowserRouter>
       <Header />
       <Routes>
@@ -26,7 +22,6 @@ const App = () => {
         <Route path="/create-listing" element={<CreateListing />} />
       </Routes>
     </BrowserRouter>
-   </Provider>
   );
 };
 // const router = createBrowserRouter(

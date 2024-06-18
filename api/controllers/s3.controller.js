@@ -1,10 +1,9 @@
 import dotenv from 'dotenv';
 // import AWS from 'aws-sdk';
-import {S3Client, PutObjectCommand} from "@aws-sdk/client-s3"
+import {S3Client, PutObjectCommand, GetObjectCommand} from "@aws-sdk/client-s3"
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner"
 import fs from 'fs-extra';
 import util from 'util';
-import { GetObjectCommand } from '@aws-sdk/client-s3';
 dotenv.config();
 
 const region = process.env.AWS_BUCKET_REGION;
@@ -28,11 +27,11 @@ const unlinkFile = util.promisify(fs.unlink);
 
 const uploadImage = async (req, res, next) => {
     const file = req.file;
-    // console.log(file);
+    const filename = file.filename;
     const fileStream = fs.createReadStream(file.path);
     const uploadParams = {
       Bucket: bucketName,
-      Key: file.filename,
+      Key: filename,
       Body: fileStream
     };
     await s3Client.send(new PutObjectCommand(uploadParams));
@@ -40,9 +39,9 @@ const uploadImage = async (req, res, next) => {
       // console.log(imageInfo.Location);
       // res.status(200).send({ imageUrl: imageInfo.Location });
       // console.log(imageInfo);
-      res.status(200).send({ imageKey: file.fileStream });
+      res.status(200).send({ imageKey: filename });
       await unlinkFile(file.path);
-      return file.filename; 
+      return filename; 
 };
 
 // const downloadImage = async (fileKey) => {
@@ -62,8 +61,7 @@ const getImageUrl = async (fileKey) => {
   };
 
   const command = new GetObjectCommand(params);
-  const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-  console.log(url);
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 360000 });
   return url;
 }
 

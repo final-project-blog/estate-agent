@@ -13,9 +13,11 @@ routes.post('/upload',upload.single("image"), uploadImage);
 //     return readStream
 // });
 
-routes.get('/Url/:key', (req, res) => {
-    const key = req.params.key;
-    const imageUrl = getImageUrl(key);
+routes.get('/Url/:key', async (req, res) => {
+    const filekey = req.params.key;
+    console.log(filekey);
+    const imageUrl = await getImageUrl(filekey);
+    res.status(200).send({imageUrl: imageUrl});
     return imageUrl
 });
 

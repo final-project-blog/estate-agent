@@ -7,6 +7,7 @@ const CreateListing = () => {
     const [formData, setFrameData] = useState({
         imageKeys: [],
     });
+    console.log("formData:" ,formData);
     const storeImage = async ({image}) => {
         const formData = new FormData()
         formData.append("image", image)
@@ -26,7 +27,10 @@ const CreateListing = () => {
         const promises = [];
         for (let i = 0; i < files.length; i++) {
             promises.push(storeImage({image: files[i]}))
-        }  
+        }
+        Promise.all(promises).then((keys) => {
+            setFrameData({...formData, imageKeys: formData.imageKeys.concat(keys)})
+        })
     }
 }
     return (

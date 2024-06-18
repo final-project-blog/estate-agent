@@ -7,6 +7,7 @@ const CreateListing = () => {
     const [formData, setFrameData] = useState({
         imageKeys: [],
     });
+    console.log("formData:" ,formData);
     const storeImage = async ({image}) => {
         const formData = new FormData()
         formData.append("image", image)

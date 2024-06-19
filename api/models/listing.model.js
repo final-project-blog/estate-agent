@@ -29,7 +29,7 @@ const listingSchema = new mongoose.Schema({
         type: Number,
         required: true
         },
-    furnishings: {
+    furnished: {
         type: String,
         required: true
     },
@@ -45,7 +45,7 @@ const listingSchema = new mongoose.Schema({
         type: Boolean,
         required: true
     },
-    image: {
+    imageKeys: {
         type: Array,
         required: true
     },

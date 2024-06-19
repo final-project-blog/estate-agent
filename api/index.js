@@ -8,8 +8,8 @@ import passport from 'passport';
 import authRouter from './routes/auth.route.js';
 import listingRouter from './routes/listing.route.js';
 import s3UrlRouter from './routes/s3.route.js'; // Ensure correct path
-import multer from 'multer';
-import userRouter from './routes/user.route.js'; // Ensure correct path
+import userRouter from './routes/user.route.js'
+
 dotenv.config();
 
 mongoose.connect(process.env.MONGO_URI).then(() => {
@@ -42,8 +42,8 @@ app.use(passport.session());
 
 app.use('/api/auth', authRouter);
 app.use('/api/listing', listingRouter);
-app.use('/api/images', s3UrlRouter); // Use correct import path
-app.use('/api/user', userRouter); // Use correct import path
+app.use('/api/images', s3UrlRouter);
+app.use('/api/user', userRouter);
 
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode || 500;

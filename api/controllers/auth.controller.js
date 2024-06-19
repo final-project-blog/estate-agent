@@ -1,5 +1,5 @@
 import User from "../models/user.model.js";
-import errorHandler from "../utills/error.js";
+import errorHandler from "../utils/error.js";
 import jwt from "jsonwebtoken";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';

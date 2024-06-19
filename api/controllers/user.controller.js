@@ -1,11 +1,17 @@
 import bcrypt from 'bcrypt';
-import User from '../models/user.model.js';
-import { errorHandler } from '../units/error.js';
+import User from '../models/user.model.js'; // Import User model once
+import  errorHandler  from '../utils/error.js';
 
 export const test = (req, res) => {
-    res.json({
-        message: 'Welcome to the API!',
-    });
+    try {
+        
+        throw errorHandler(500, 'Internal Server Error');
+    } catch (error) {
+        console.error('Caught error:', error);
+        res.status(error.statusCode || 500).json({
+            message: error.message || 'An unknown error occurred',
+        });
+    }
 };
 
 export const updateUser = async (req, res, next) => {
@@ -47,8 +53,10 @@ export const deleteUser = async (req, res, next) => {
     
     try {
         await User.findByIdAndDelete(req.params.id);
+        req.clearCookie('access_token');
         res.status(200).json({ message: 'User deleted!' });
     } catch (error) {
         next(error);
     }
 };
+

@@ -1,6 +1,6 @@
 import Listing from '../models/listing.model.js';
-import errorHandler from '../utills/error.js';
-import verifyToken from '../utills/verifyToken.js';
+import errorHandler from '../utils/error.js';
+import verifyToken from '../utils/verifyToken.js';
 
 const createListing = async (req, res, next) => {
     try {

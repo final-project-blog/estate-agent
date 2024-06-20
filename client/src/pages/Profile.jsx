@@ -12,6 +12,7 @@ import {
   signOutUserFailure,
   signOutUserSuccess,
 } from '../redux/user/userSlice';
+import axios from 'axios';
 
 
 export default function Profile() {
@@ -34,6 +35,12 @@ export default function Profile() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
+
+
+  const getDownloadUrl = async (fileKey) => {
+    const result = await axios.get(`http://localhost:3000/api/images/Url/${fileKey}`)
+    return result.data.imageUrl
+}
 
   const handleDeleteAccount = async () => {
     try {
@@ -71,7 +78,6 @@ export default function Profile() {
       }
       dispatch(updateUserSuccess(data));
       setUpdateSuccess(true);
-      console.log(updateSuccess)
     } catch (error) {
       dispatch(updateUserFailure(error.message));
     }
@@ -98,16 +104,24 @@ export default function Profile() {
       setShowListingsError(false);
       const res = await fetch(`api/user/listings/${currentUser._id}`)
       const data = await res.json();
-      if (!data.success) {
+      if (data.success === false) {
         setShowListingsError(true);
         return;
       }
-      setUserListings(data.listings);
+      const listingsWithImages = await Promise.all(data.map(async (listing) => {
+        const imageUrls = await Promise.all(listing.imageKeys.map(async (imageKey) => {
+          const imageRes = await fetch(`/api/images/Url/${imageKey}`);
+          const imageData = await imageRes.json();
+          return imageData.imageUrl;  // Assuming the response contains the URL as 'url'
+        }));
+        return { ...listing, imageUrls };
+      }));
+      setUserListings(listingsWithImages);
     } catch (error) {
       setShowListingsError(true);
     }
   };
-
+console.log('userListings', userListings);
   const handleDeleteListing = async (listingId) => {
     try {
       const res = await fetch(`/api/listings/delete/${listingId}`, {
@@ -122,7 +136,6 @@ export default function Profile() {
       console.error(error.message);
     }
   };
-
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -167,6 +180,10 @@ export default function Profile() {
           className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>
           {loading ? "Loading.." : "Update"}
         </button>
+        <Link className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-90 "
+        to={"/create-listing"}>
+          Create Listing
+        </Link>
       </form>
       <div className='flex justify-between mt-5'>
         <span className='text-red-700 cursor-pointer' onClick={handleDeleteAccount}>

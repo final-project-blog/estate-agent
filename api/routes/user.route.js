@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/test', verifyToken, test);
 
-router.put('/updateUser', verifyToken, updateUser);
+router.post('/update/:id', verifyToken, updateUser);
 
 router.delete('/delete/:id', verifyToken, deleteUser);
 

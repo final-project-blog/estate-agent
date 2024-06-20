@@ -61,7 +61,7 @@ export default function Profile() {
     try {
       dispatch(updateUserStart());
       const formData = { username, email, password, avatar };
-      const res = await fetch(`/api/users/update/${currentUser._id}`, {
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

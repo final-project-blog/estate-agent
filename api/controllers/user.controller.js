@@ -16,7 +16,7 @@ export const test = (req, res) => {
 };
 
 export const updateUser = async (req, res, next) => {
-    if (req.user.id !== req.params.id) {
+    if (req.user._id !== req.params.id) {
         console.log("req.user.id", req.user.id)
         console.log("req.params.id", req.params.id)
         return res.status(401).json({ message: 'Not authorized!' });

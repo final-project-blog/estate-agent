@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   updateUserStart,
@@ -8,19 +8,18 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
-  signInStart,
-  signInSuccess,
-  signInFailure,
+  signOutUserStart,
+  signOutUserFailure,
+  signOutUserSuccess,
 } from '../redux/user/userSlice';
-import { Link } from 'react-router-dom';
+
 
 export default function Profile() {
   const fileRef = useRef(null);
   const { currentUser, loading, error } = useSelector((state) => state.user);
+  const [formData, setFormData] = useState({});
+  const [updateSuccess, setUpdateSuccess] = useState(false);
   const [file, setFile] = useState(undefined);
-  const [username, setUsername] = useState(currentUser?.username || '');
-  const [email, setEmail] = useState(currentUser?.email || '');
-  const [password, setPassword] = useState('');
   const [avatar, setAvatar] = useState(currentUser?.avatar || '');
   const [userListings, setUserListings] = useState([]);
   const [showListingsError, setShowListingsError] = useState(false);
@@ -32,25 +31,23 @@ export default function Profile() {
       // Handle file upload logic here
     }
   }, [file]);
-
-  const handleSignOut = () => {
-    // Logic for signing out
-    navigate('/sign-in');
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
   const handleDeleteAccount = async () => {
     try {
       dispatch(deleteUserStart());
-      const res = await fetch(`/api/users/delete/${currentUser._id}`, {
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: 'DELETE',
       });
       const data = await res.json();
-      if (!data.success) {
+      if (data.success === false) {
         dispatch(deleteUserFailure(data.message));
         return;
       }
       dispatch(deleteUserSuccess(data));
-      navigate('/sign-in');
+      navigate('/signin');
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
     }
@@ -60,7 +57,6 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      const formData = { username, email, password, avatar };
       const res = await fetch(`/api/user/update/${currentUser._id}`, {
         method: 'POST',
         headers: {
@@ -69,39 +65,31 @@ export default function Profile() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (!data.success) {
+      if (data.success === false) {
         dispatch(updateUserFailure(data.message));
         return;
       }
       dispatch(updateUserSuccess(data));
-      setUsername(data.username);
-      setEmail(data.email);
+      setUpdateSuccess(true);
+      console.log(updateSuccess)
     } catch (error) {
       dispatch(updateUserFailure(error.message));
     }
   };
 
-  const handleSignUp = async (e) => {
+  const handleSignOut = async (e) => {
     e.preventDefault();
     try {
-      dispatch(signUpStart());
-      const formData = { username, email, password, avatar };
-      const res = await fetch('/api/users/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      dispatch(signOutUserStart());
+      const res = await fetch('/api/auth/signout');
       const data = await res.json();
-      if (!data.success) {
-        dispatch(signUpFailure(data.message));
+      if (data.success === false) {
+        dispatch(signOutUserFailure(data.message));
         return;
       }
-      dispatch(signUpSuccess(data));
-      navigate('/profile'); // Navigate to the profile page after successful sign-up
+      dispatch(signOutUserSuccess(data));
     } catch (error) {
-      dispatch(signUpFailure(error.message));
+      dispatch(signOutUserFailure(error.message));
     }
   };
 
@@ -157,44 +145,44 @@ export default function Profile() {
           placeholder='username'
           id='username'
           className='border p-3 rounded-lg'
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          defaultValue={currentUser.username}
+          onChange={handleChange}
         />
         <input
           type='email'
           placeholder='email'
           id='email'
           className='border p-3 rounded-lg'
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          defaultValue={currentUser.email}
+          onChange={handleChange}
         />
         <input
           type='password'
           placeholder='password'
           id='password'
           className='border p-3 rounded-lg'
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handleChange}
         />
-        <button
-          disabled={loading}
-          className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'
-        >
-          {loading ? 'Loading...' : 'Update'}
+        <button disabled={loading}
+          className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>
+          {loading ? "Loading.." : "Update"}
         </button>
       </form>
       <div className='flex justify-between mt-5'>
         <span className='text-red-700 cursor-pointer' onClick={handleDeleteAccount}>
           Delete account
         </span>
-        <span className='text-red-700 cursor-pointer' onClick={handleSignOut}>
+        <span onClick={handleSignOut} className='text-red-700 cursor-pointer' >
           Sign out
         </span>
       </div>
+          <p className='text-red-700 mt-5'>{error ? error : "" }</p>
+          <p className='text-green-700 mt-5'>{updateSuccess ? "User is updated successfully!" : ""}</p>
+          {/* {updateSuccess && <p className='text-green-700 mt-5'>User is updated successfully!</p>} */}
       <button onClick={handleShowListings} className='text-green-700 w-full'>
         Show Listings
       </button>
-      {showListingsError && <p className='text-red-700 mt-5'>Error showing listings</p>}
+        {showListingsError && <p className='text-red-700 mt-5'>Error showing listings</p>}
       {userListings && userListings.length > 0 && (
         <div className='flex flex-col gap-4'>
           <h1 className='text-center mt-7 text-2xl font-semibold'>Your Listings</h1>

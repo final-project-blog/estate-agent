@@ -11,12 +11,14 @@ const createListing = async (req, res, next) => {
 };
 
 const deleteListing = async (req, res, next) => {
-    const listing = await Listing.findById(req.params.id); // findById statt find
+
+    console.log("req.user._id",req.user._id);
+    const listing = await Listing.findById(req.params.id); 
     if (!listing) {
-        return res.status(404).json('Listing not found'); // json statt direkt Text
+        return res.status(404).json('Listing not found'); 
     }
 
-    if (req.user.id !== listing.userRef) {
+    if (req.user._id !== listing.userRef) {
         return next(errorHandler(401, 'You are not allowed to delete'));
     }
 

@@ -36,12 +36,6 @@ export default function Profile() {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-
-  const getDownloadUrl = async (fileKey) => {
-    const result = await axios.get(`http://localhost:3000/api/images/Url/${fileKey}`)
-    return result.data.imageUrl
-}
-
   const handleDeleteAccount = async () => {
     try {
       dispatch(deleteUserStart());
@@ -112,7 +106,7 @@ export default function Profile() {
         const imageUrls = await Promise.all(listing.imageKeys.map(async (imageKey) => {
           const imageRes = await fetch(`/api/images/Url/${imageKey}`);
           const imageData = await imageRes.json();
-          return imageData.imageUrl;  // Assuming the response contains the URL as 'url'
+          return imageData.imageUrl;
         }));
         return { ...listing, imageUrls };
       }));
@@ -121,16 +115,27 @@ export default function Profile() {
       setShowListingsError(true);
     }
   };
-console.log('userListings', userListings);
+
+
   const handleDeleteListing = async (listingId) => {
+    console.log(userListings);
     try {
-      const res = await fetch(`/api/listings/delete/${listingId}`, {
+        const listingToDelete = userListings.find((listing) => listing._id === listingId);
+        if (!listingToDelete) {
+          throw new Error("Listing not found");
+        }
+      const res = await fetch(`/api/listing/delete/${listingId}`, {
         method: 'DELETE',
       });
       const data = await res.json();
-      if (!data.success) {
+      if (data.success === false) {
         return;
       }
+
+      await Promise.all(listingToDelete.imageKeys.map(async (imageKey) => {
+        await axios.delete(`/api/images/delete/${imageKey}`);
+      }));
+
       setUserListings((prevListings) => prevListings.filter((listing) => listing._id !== listingId));
     } catch (error) {
       console.error(error.message);
@@ -225,5 +230,3 @@ console.log('userListings', userListings);
   );
 }
 
-
-      

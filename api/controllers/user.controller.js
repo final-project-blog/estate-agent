@@ -49,14 +49,13 @@ export const updateUser = async (req, res, next) => {
 };
 
 export const deleteUser = async (req, res, next) => {
-    if (req.user.id !== req.params.id) {
+    if (req.user._id !== req.params.id) {
         return res.status(401).json({ message: 'Not authorized!' });
     }
-    
     try {
         await User.findByIdAndDelete(req.params.id);
-        req.clearCookie('access_token');
-        res.status(200).json({ message: 'User deleted!' });
+        res.clearCookie('access_token');
+        res.status(200).json({ message: 'User had been deleted!' });
     } catch (error) {
         next(error);
     }

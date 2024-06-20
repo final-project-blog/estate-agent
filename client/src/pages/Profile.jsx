@@ -8,9 +8,9 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
-  signInStart,
-  signInSuccess,
-  signInFailure,
+  signUpStart,
+  signUpSuccess,
+  signUpFailure,
 } from '../redux/user/userSlice';
 import { Link } from 'react-router-dom';
 
@@ -33,12 +33,18 @@ export default function Profile() {
     }
   }, [file]);
 
+  useEffect(() => {
+    setUsername(currentUser?.username || '');
+    setEmail(currentUser?.email || '');
+    setAvatar(currentUser?.avatar || '');
+  }, [currentUser]);
+
   const handleSignOut = () => {
     // Logic for signing out
-    navigate('/sign-in');
+    navigate('/signin');
   };
 
-  const handleDeleteAccount = async () => {
+  const handleDeleteUser = async () => {
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/users/delete/${currentUser._id}`, {
@@ -50,7 +56,7 @@ export default function Profile() {
         return;
       }
       dispatch(deleteUserSuccess(data));
-      navigate('/sign-in');
+      navigate('/signin');
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
     }
@@ -74,8 +80,6 @@ export default function Profile() {
         return;
       }
       dispatch(updateUserSuccess(data));
-      setUsername(data.username);
-      setEmail(data.email);
     } catch (error) {
       dispatch(updateUserFailure(error.message));
     }
@@ -99,7 +103,7 @@ export default function Profile() {
         return;
       }
       dispatch(signUpSuccess(data));
-      navigate('/profile'); // Navigate to the profile page after successful sign-up
+      navigate('/profile');
     } catch (error) {
       dispatch(signUpFailure(error.message));
     }
@@ -108,7 +112,7 @@ export default function Profile() {
   const handleShowListings = async () => {
     try {
       setShowListingsError(false);
-      const res = await fetch(`http://localhost:3000/api/user/listings/${currentUser._id}`);
+      const res = await fetch(`/api/user/listings/${currentUser._id}`);
       const data = await res.json();
       if (!data.success) {
         setShowListingsError(true);
@@ -135,25 +139,6 @@ export default function Profile() {
     }
   };
 
-  const handleDeleteUser = async () => {
-    try {
-      dispatch(deleteUserStart());
-      const res = await fetch(`/api/users/delete/${currentUser._id}`, {
-        method: 'DELETE',
-      });
-      const data = await res.json();
-      if (!data.success) {
-        dispatch(deleteUserFailure(data.message));
-        return;
-      }
-      dispatch(deleteUserSuccess(data));
-
-    } catch (error) {
-      dispatch(deleteUserFailure(error.message));
-     
-    }
-
-  };
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -167,7 +152,7 @@ export default function Profile() {
         />
         <img
           onClick={() => fileRef.current.click()}
-          src={currentUser?.avatar || avatar}
+          src={avatar}
           alt='profile'
           className='rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2'
         />
@@ -204,7 +189,7 @@ export default function Profile() {
       </form>
       <div className='flex justify-between mt-5'>
         <span className='text-red-700 cursor-pointer' onClick={handleDeleteUser}>
-          Delete User
+          Delete account
         </span>
         <span className='text-red-700 cursor-pointer' onClick={handleSignOut}>
           Sign out
@@ -225,7 +210,7 @@ export default function Profile() {
               <Link className='text-slate-700 font-semibold hover:underline truncate flex-1' to={`/listing/${listing._id}`}>
                 <p>{listing.name}</p>
               </Link>
-              <div className='flex flex-col item-center'>
+              <div className='flex flex-col items-center'>
                 <button onClick={() => handleDeleteListing(listing._id)} className='text-red-700 uppercase'>
                   Delete
                 </button>
@@ -238,6 +223,3 @@ export default function Profile() {
     </div>
   );
 }
-
-
-      

@@ -1,20 +1,26 @@
+import React from 'react';
+import ListingItem from '../components/ListingItem';
 
 const Home = () => {
+  const listings = [
+    { id: 1, title: 'Beautiful Apartment', description: 'Spacious apartment with great views.', price: 1200 },
+    { id: 2, title: 'Cozy Studio', description: 'Comfortable studio in a convenient location.', price: 800 },
+    // Weitere Listings hier hinzufügen
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-600">
-      <div className="bg-white p-12 rounded-lg shadow-lg w-full max-w-lg text-center">
-        <img 
-          src="https://via.placeholder.com/150" 
-          alt="Estate Agent" 
-          className="w-32 h-32 mx-auto mb-6 rounded-full"
-        />
-        <h2 className="text-4xl font-bold text-blue-700 mb-4">Welcome to Estate Agent</h2>
-        <p className="text-lg text-gray-800">
-          We help you find your dream home. 
-        </p>
-      </div>
+    <div className="home-page">
+      <h1>Featured Listings</h1>
+      {listings.map(listing => (
+        <ListingItem key={listing.id} listing={listing} />
+      ))}
     </div>
   );
 };
 
 export default Home;
+
+
+
+
+

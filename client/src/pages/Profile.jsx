@@ -8,9 +8,9 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
-  signUpStart,
-  signUpSuccess,
-  signUpFailure,
+  signInStart,
+  signInSuccess,
+  signInFailure,
 } from '../redux/user/userSlice';
 import { Link } from 'react-router-dom';
 
@@ -33,14 +33,8 @@ export default function Profile() {
     }
   }, [file]);
 
-  useEffect(() => {
-    setUsername(currentUser?.username || '');
-    setEmail(currentUser?.email || '');
-    setAvatar(currentUser?.avatar || '');
-  }, [currentUser]);
 
-
-  const handleDeleteUser = async () => {
+  const handleDeleteAccount = async () => {
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/users/delete/${currentUser._id}`, {
@@ -52,7 +46,7 @@ export default function Profile() {
         return;
       }
       dispatch(deleteUserSuccess(data));
-      navigate('/signin');
+      navigate('/sign-in');
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
     }
@@ -99,7 +93,7 @@ export default function Profile() {
         return;
       }
       dispatch(signUpSuccess(data));
-      navigate('/profile');
+      navigate('/profile'); // Navigate to the profile page after successful sign-up
     } catch (error) {
       dispatch(signUpFailure(error.message));
     }
@@ -108,7 +102,7 @@ export default function Profile() {
   const handleShowListings = async () => {
     try {
       setShowListingsError(false);
-      const res = await fetch(`/api/user/listings/${currentUser._id}`);
+      const res = await fetch(`api/user/listings/${currentUser._id}`)
       const data = await res.json();
       if (!data.success) {
         setShowListingsError(true);
@@ -148,7 +142,7 @@ export default function Profile() {
         />
         <img
           onClick={() => fileRef.current.click()}
-          src={avatar}
+          src={currentUser?.avatar || avatar}
           alt='profile'
           className='rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2'
         />
@@ -184,7 +178,7 @@ export default function Profile() {
         </button>
       </form>
       <div className='flex justify-between mt-5'>
-        <span className='text-red-700 cursor-pointer' onClick={handleDeleteUser}>
+        <span className='text-red-700 cursor-pointer' onClick={handleDeleteAccount}>
           Delete account
         </span>
         <span className='text-red-700 cursor-pointer' onClick={handleSignOut}>
@@ -206,7 +200,7 @@ export default function Profile() {
               <Link className='text-slate-700 font-semibold hover:underline truncate flex-1' to={`/listing/${listing._id}`}>
                 <p>{listing.name}</p>
               </Link>
-              <div className='flex flex-col items-center'>
+              <div className='flex flex-col item-center'>
                 <button onClick={() => handleDeleteListing(listing._id)} className='text-red-700 uppercase'>
                   Delete
                 </button>

@@ -16,7 +16,7 @@ export const test = (req, res) => {
 };
 
 export const updateUser = async (req, res, next) => {
-    if (req.user.id !== req.params.id) {
+    if (req.user._id !== req.params.id) {
         console.log("req.user.id", req.user.id)
         console.log("req.params.id", req.params.id)
         return res.status(401).json({ message: 'Not authorized!' });
@@ -49,7 +49,7 @@ export const updateUser = async (req, res, next) => {
 };
 
 export const deleteUser = async (req, res, next) => {
-    if (req.user.id !== req.params.id) {
+    if (req.user._id !== req.params.id) {
         return next(errorHandler(401,'You can only delete your own account!' ));
     }
     
@@ -64,7 +64,7 @@ export const deleteUser = async (req, res, next) => {
 
 export const getUserListing = async (req, res, next) => {
 
-    if (req.user.id  === req.params.id) {
+    if (req.user._id  === req.params.id) {
         try {
             const listings = await Listing.find({ userRef: req.params.id });
             res.status(200).json(listings);
@@ -75,4 +75,5 @@ export const getUserListing = async (req, res, next) => {
         return next(errorHandler(401, 'You are not allowed to view this listing!'));
     }
 };
+
 

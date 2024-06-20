@@ -39,10 +39,6 @@ export default function Profile() {
     setAvatar(currentUser?.avatar || '');
   }, [currentUser]);
 
-  const handleSignOut = () => {
-    // Logic for signing out
-    navigate('/signin');
-  };
 
   const handleDeleteUser = async () => {
     try {
@@ -67,7 +63,7 @@ export default function Profile() {
     try {
       dispatch(updateUserStart());
       const formData = { username, email, password, avatar };
-      const res = await fetch(`/api/users/update/${currentUser._id}`, {
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +81,7 @@ export default function Profile() {
     }
   };
 
-  const handleSignUp = async (e) => {
+  const handleSignOut= async (e) => {
     e.preventDefault();
     try {
       dispatch(signUpStart());

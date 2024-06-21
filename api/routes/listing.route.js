@@ -4,10 +4,10 @@ import verifyToken from '../utils/verifyToken.js';
 
 const routes = express.Router();
 
-router.post('/create', verifyToken, createListing );
-router.delete('/delete/:id', verifyToken, deleteListing);
-router.post('/update/:id', verifyToken, updateListing);
-router.get('/get/:id', getListing);
-router.get('/get', getListings);
+routes.post('/create', verifyToken, createListing );
+routes.delete('/delete/:id', verifyToken, deleteListing);
+routes.post('/update/:id', verifyToken, updateListing);
+routes.get('/get/:id', getListing);
+routes.get('/get', getListings);
 
-export default router;
+export default routes;

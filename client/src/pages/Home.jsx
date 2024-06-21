@@ -53,19 +53,19 @@ export default function Home() {
     <div className='bg-blue-900 text-gray-800'>
       {/* Top-Bereich */}
       <div className='flex flex-col gap-6 p-28 px-3 max-w-6xl mx-auto'>
-        <h1 className='text-4xl lg:text-6xl font-bold text-gray-900'>
+        <h1 className='text-5xl lg:text-7xl font-bold text-gray-900'>
           Finde dein nächstes <span className='text-yellow-300'>perfektes</span>
           <br />
           Zuhause mit Leichtigkeit
         </h1>
-        <div className='text-gray-400 text-sm'>
+        <div className='text-gray-400 text-base lg:text-lg'>
           EstateAgent ist der beste Ort, um dein nächstes perfektes Zuhause zu finden.
           <br />
           Wir haben eine breite Palette von Immobilien zur Auswahl.
         </div>
         <Link
           to={'/search'}
-          className='text-sm text-blue-800 font-bold hover:underline'
+          className='text-base lg:text-lg text-blue-800 font-bold hover:underline'
         >
           Jetzt starten...
         </Link>

@@ -11,16 +11,23 @@ export default function SignIn() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
-  const { loading, error } = useSelector((state) => state.user); 
-  
+  const { loading, error } = useSelector((state) => state.user);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.id]: e.target.value,
     });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.email || !formData.password) {
+      dispatch(signInFailure("Please fill in all fields."));
+      return;
+    }
+
     try {
       dispatch(signInStart());
       const res = await fetch('/api/auth/signin', {
@@ -31,31 +38,33 @@ export default function SignIn() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      console.log(data);
-      if (data.success === false) {
+
+      if (!data.success) {
         dispatch(signInFailure(data.message));
         return;
       }
+      
       dispatch(signInSuccess(data));
       navigate('/');
     } catch (error) {
       dispatch(signInFailure(error.message));
     }
   };
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl text-center font-semibold my-7'>Sign In</h1>
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input
           type='email'
-          placeholder='email'
+          placeholder='Email'
           className='border p-3 rounded-lg'
           id='email'
           onChange={handleChange}
         />
         <input
           type='password'
-          placeholder='password'
+          placeholder='Password'
           className='border p-3 rounded-lg'
           id='password'
           onChange={handleChange}
@@ -68,7 +77,7 @@ export default function SignIn() {
         </button>
       </form>
       <div className='flex gap-2 mt-5'>
-        <p>Dont have an account?</p>
+        <p>Don't have an account?</p>
         <Link to={'/signup'}>
           <span className='text-blue-700'>Sign up</span>
         </Link>

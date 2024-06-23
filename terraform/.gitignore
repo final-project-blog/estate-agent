@@ -1,4 +1,4 @@
-.terreform
+.terraform
 *.lock.hc1
 *.tfstate
 *.tfstate.*

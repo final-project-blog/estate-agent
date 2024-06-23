@@ -49,12 +49,12 @@ const CreateListing = () => {
               return;
             }
             const imageUrl = await Promise.all(
-              data.imageKeys.map(async (imageKey) => {
-                const imageRes = await fetch(`http://localhost:3000/api/images/Url/${imageKey}`);
-                const imageData = await imageRes.json();
-                console.log("imageData:", imageData);
+                data.imageKeys.map(async (imageKey) => {
+                    const imageRes = await fetch(`http://localhost:3000/api/images/Url/${imageKey}`);
+                    const imageData = await imageRes.json();
+                    console.log("imageData:", imageData);
                 return imageData.imageUrl;
-              })
+                })
             );
             const updatedData = { ...data, imageUrl };
     
@@ -171,11 +171,12 @@ const CreateListing = () => {
                 })
             })
             const data = await res.json();
+            console.log("data",data);
             setLoading(false);
             if (data.success === false) {
                 setError(data.message)
             }
-            // navigate(`/listing/${data._id}`)
+            navigate(`/listing/${data._id}`)
         } catch (error) {
             setError(error.message)
             setLoading(false);

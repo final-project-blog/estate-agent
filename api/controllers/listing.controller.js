@@ -81,7 +81,7 @@ const deleteListing = async (req, res, next) => {
         }
 
         let type = req.query.type;
-        if (type === undefined || type === 'false') {
+        if (type === undefined || type === 'all') {
             type = { $in: ['sale', 'rent'] };
         }
 
@@ -100,7 +100,7 @@ const deleteListing = async (req, res, next) => {
             .skip(startIndex)
             .limit(limit);
 
-        res.status(200).json(listings);
+        return res.status(200).json(listings);
     } catch (error) {
         next(error);
     }

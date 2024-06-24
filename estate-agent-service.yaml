@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: estate-agent-backend
+  namespace: default
+spec:
+  selector:
+    app: estate-agent-backend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: estate-agent-frontend
+  namespace: default
+spec:
+  selector:
+    app: estate-agent-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

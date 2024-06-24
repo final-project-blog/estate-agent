@@ -6,7 +6,7 @@ import SwiperCore from 'swiper';
 import {useSelector} from 'react-redux'
 import 'swiper/css/bundle'
 import {
-    FaBath, FaBed, FaChair, FaMapMarkedAlt, FaMapMarkerAlt, FaParking, FaShare} from "react-icons/fa"
+    FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare} from "react-icons/fa"
 import Contact from "../components/Contact";
 
 

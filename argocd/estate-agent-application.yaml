@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: estate-agent
+  namespace: argocd
+spec:
+  project: estate-agent
+  source:
+    repoURL: https://github.com/final-project-blog/estate-agent
+    targetRevision: HEAD
+    path: deployment
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default

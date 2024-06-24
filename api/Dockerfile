@@ -1,20 +1,20 @@
-# Verwenden Sie ein Basisimage mit Node.js
-FROM node:latest
+# Verwende ein passendes Basisimage, hier als Beispiel Node.js 14
+FROM node:14
 
-# Arbeitsverzeichnis im Container erstellen
+# Setze das Arbeitsverzeichnis innerhalb des Containers
 WORKDIR /usr/src/app
 
-# Kopieren Sie das Paketmanifest und die Lock-Dateien in das Arbeitsverzeichnis
+# Kopiere die Abhängigkeitsdateien
 COPY package*.json ./
 
-# Installieren Sie die Abhängigkeiten
-RUN npm install
+# Installiere die Abhängigkeiten, einschließlich einer spezifischen Version von bcrypt
+RUN npm install bcrypt@5.0.1
 
-# Kopieren Sie den Rest des Backend-Codes in das Arbeitsverzeichnis
+# Kopiere den gesamten Anwendungscode in das Arbeitsverzeichnis
 COPY . .
 
-# Exponieren Sie den Port, auf dem Ihre Anwendung läuft
-EXPOSE 3000
+# Baue die Anwendung
+RUN npm run build
 
-# Befehl zum Ausführen Ihrer Anwendung
-CMD ["npm", "start"]
+# Setze das Standardkommando für den Container
+CMD ["node", "index.js"]

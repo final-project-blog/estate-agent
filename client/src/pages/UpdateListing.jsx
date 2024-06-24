@@ -23,7 +23,6 @@ const CreateListing = () => {
         parking: false,
         furnished: false
     });
-    console.log("formData1:" ,formData);
     const [imageUploadError, setImageUploadError] = useState(false)
     const [uploading, setUploading] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -31,41 +30,24 @@ const CreateListing = () => {
 
     useEffect(() => {
         const fetchListing = async () => {
-          try {
             const listingId = params.listingId;
-            console.log("listingId:", listingId);
-    
             const res = await fetch(`http://localhost:3000/api/listing/get/${listingId}`);
-    
-            if (!res.ok) {
-              throw new Error(`Error fetching listing: ${res.status} ${res.statusText}`);
-            }
-    
             const data = await res.json();
-            console.log("data:", data);
-    
             if (data.success === false) {
-              console.log(data.message);
-              return;
+                return;
             }
             const imageUrl = await Promise.all(
                 data.imageKeys.map(async (imageKey) => {
                     const imageRes = await fetch(`http://localhost:3000/api/images/Url/${imageKey}`);
                     const imageData = await imageRes.json();
-                    console.log("imageData:", imageData);
                 return imageData.imageUrl;
                 })
             );
             const updatedData = { ...data, imageUrl };
-    
             setFormData(updatedData);
-          } catch (error) {
-            console.error('Failed to fetch listing:', error);
-          }
         };
-    
         fetchListing();
-      }, [params.listingId]); 
+    }, [params.listingId]); 
     
     const storeImage = async ({image}) => {
         const formData = new FormData()
@@ -75,7 +57,6 @@ const CreateListing = () => {
                 'Content-Type': 'form-data'
             }
         })
-        // console.log("imageKey:", result.data.imageKey)
         return result.data.imageKey
     }
     const getDownloadUrl = async (fileKey) => {
@@ -92,10 +73,7 @@ const CreateListing = () => {
                     keyPromises.push(storeImage({ image: files[i] }));
                 }
                 const keys = await Promise.all(keyPromises);
-                console.log("keys:", keys);
-                console.log("formData.imagekeys:", formData.imageKeys);
                 const updatedKeys = formData.imageKeys.concat(keys);
-                console.log("updatedKeys:", updatedKeys);
                 setFormData(prevFormData => ({ ...prevFormData, imageKeys: updatedKeys }));
     
                 const urlPromises = [];
@@ -122,7 +100,6 @@ const CreateListing = () => {
     const handleRemoveImage = async (index) => {
 
         await axios.delete(`http://localhost:3000/api/images/delete/${formData.imageKeys[index]}`)
-        console.log(formData.imageKeys[index])
         setFormData({
             ...formData,
             imageKeys: formData.imageKeys.filter((_, i) => i !== index),
@@ -154,9 +131,8 @@ const CreateListing = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // console.log(formData);
         try {
-            if (formData.imageKeys.length < 1) return setError("You must upload at least one image")
+            if (formData.imageUrl.length < 1) return setError("You must upload at least one image")
             if (+formData.regularPrice < +formData.discountPrice) return setError("Discount price must be lower than regular price")
             setLoading(true);
             setError(false);
@@ -171,7 +147,6 @@ const CreateListing = () => {
                 })
             })
             const data = await res.json();
-            console.log("data",data);
             setLoading(false);
             if (data.success === false) {
                 setError(data.message)
@@ -276,7 +251,7 @@ const CreateListing = () => {
                         onChange={handleChange} value={formData.discountPrice} />
                         <div className="flex flex-col items-center">
                             <p>Discount Price</p>
-                            <span className="text-xs">($/month)</span>
+                            {formData.type === "rent" && (<span className="text-xs">($ /month)</span>)}
                         </div>
                     </div>
                     )}
@@ -289,7 +264,7 @@ const CreateListing = () => {
                 </p>
                 <div className="flex gap-4">
                     <input onChange={(e)=> setFiles(e.target.files)} className="p-3 border border-gray-300 rounded w-full"
-                    type="file" id="images" accept="image/*" multiple required/>
+                    type="file" id="images" accept="image/*" multiple />
                     <button type="button" disabled={uploading} onClick={UploadImages} className="p-3 text-green-700 border border-green-700 rounded
                     uppercase hover:shadow-lg disabled:opacity-80">{uploading ? "Uploading" : "Upload"}</button>
                 </div>

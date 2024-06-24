@@ -22,7 +22,6 @@ const CreateListing = () => {
         parking: false,
         furnished: false
     });
-    console.log("formData1:" ,formData);
     const [imageUploadError, setImageUploadError] = useState(false)
     const [uploading, setUploading] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -30,15 +29,11 @@ const CreateListing = () => {
     const storeImage = async ({image}) => {
         const formData = new FormData()
         formData.append("image", image)
-        // console.log(image)
-        // console.log(formData)
-
         const result = await axios.post('http://localhost:3000/api/images/upload', formData, {
             headers: {
                 'Content-Type': 'form-data'
             }
         })
-        // console.log("imageKey:", result.data.imageKey)
         return result.data.imageKey
     }
     const getDownloadUrl = async (fileKey) => {
@@ -82,7 +77,6 @@ const CreateListing = () => {
     const handleRemoveImage = async (index) => {
 
         await axios.delete(`http://localhost:3000/api/images/delete/${formData.imageKeys[index]}`)
-        console.log(formData.imageKeys[index])
         setFormData({
             ...formData,
             imageKeys: formData.imageKeys.filter((_, i) => i !== index),
@@ -114,7 +108,6 @@ const CreateListing = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // console.log(formData);
         try {
             if (formData.imageKeys.length < 1) return setError("You must upload at least one image")
             if (+formData.regularPrice < +formData.discountPrice) return setError("Discount price must be lower than regular price")
@@ -235,7 +228,7 @@ const CreateListing = () => {
                         onChange={handleChange} value={formData.discountPrice} />
                         <div className="flex flex-col items-center">
                             <p>Discount Price</p>
-                            <span className="text-xs">($/month)</span>
+                            {formData.type === "rent" && (<span className="text-xs">($ /month)</span>)}
                         </div>
                     </div>
                     )}

@@ -1,12 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: example-application
+  name: estate-agent
   namespace: argocd
 spec:
-  project: example-projekt
+  project: estate-agent
   source:
-    repoURL: https://github.com/marcolindner/example-k8s-application.git
+    repoURL: https://github.com/final-project-blog/estate-agent
     targetRevision: HEAD
     path: deployment
   destination:

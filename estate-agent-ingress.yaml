@@ -1,10 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: example-ingress
+  name: estate-agent-ingress
   namespace: default
 spec:
-  ingressClassName: nginx
+  ingressClassName: nginx  
   rules:
     - host: a47c3d38d4f9d48d88fe220744757cad-60897428.eu-central-1.elb.amazonaws.com
       http:
@@ -13,14 +13,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: example-frontend
+                name: estate-agent-service  
                 port:
-                  number: 80
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: example-backend
-                port:
-                  number: 3000
-
+                  number: 80  

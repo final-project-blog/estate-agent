@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: estate-agent-backend
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: estate-agent-backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: estate-agent-backend
+    spec:
+      containers:
+        - name: estate-agent-backend
+          image: final-project-blog/estate-agent-backend:latest  # Beispiel-Image-Namen und Tag
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi

@@ -15,7 +15,6 @@ function Search() {
     })
     const [loading, setLoading] = useState(false)
     const [listings, setListings] = useState([])
-    console.log("listings:", listings)
     
     useEffect(() => {
         const urlParams = new URLSearchParams(location.search);
@@ -50,7 +49,6 @@ function Search() {
             const searchQuery = urlParams.toString();
                 const res = await fetch(`/api/listing/get?${searchQuery}`);
                 const data = await res.json();
-                console.log("data:", data);
                 const listingsWithImages = await Promise.all(data.map(async (listing) => {
                     const imageUrls = await Promise.all(listing.imageKeys.map(async (imageKey) => {
                         const imageRes = await fetch(`/api/images/Url/${imageKey}`);
@@ -59,7 +57,6 @@ function Search() {
                     }));
                     return { ...listing, imageUrls };
                     }));
-                console.log("listingsWithImages:", listingsWithImages);
                 setListings(listingsWithImages)
                 setLoading(false)
         };
@@ -165,9 +162,13 @@ function Search() {
         </div>
         <div className="">
             <h1 className=" text-3xl font-semibold border-b p-3 text-slate-700 mt-5">Listing Results:</h1>
+            <div className="">
+                {!loading && listings.length === 0 && 
+                ( <p className=" test-xl text-slate-700">No Listing found!</p> )}
+            </div>
         </div>
     </div>
-  )
+    )
 }
 
 export default Search

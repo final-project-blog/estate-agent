@@ -62,10 +62,9 @@ const deleteListing = async (req, res, next) => {
 
     const getListings = async (req, res, next) => {
     try {
-        const limit = parseInt(req.params.limit) || 9;
-        const startIndex = parseInt(req.params.startIndex) || 0;
+        const limit = parseInt(req.query.limit) || 9;
+        const startIndex = parseInt(req.query.startIndex) || 0;
         let offer = req.query.offer;
-
         if (offer === undefined || offer === 'false') {
             offer = { $in: [false, true] };
         }
@@ -91,10 +90,10 @@ const deleteListing = async (req, res, next) => {
 
         const listings = await Listing.find({
             name: { $regex: searchTerm, $options: 'i' },
-            type: type,
-            offer: offer,
-            furnished: furnished,
-            parking: parking
+            type,
+            offer,
+            furnished,
+            parking
         })
             .sort({ [sort]: order })
             .skip(startIndex)

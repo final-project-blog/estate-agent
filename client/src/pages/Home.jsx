@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
@@ -77,13 +77,19 @@ export default function Home() {
           offerListings.length > 0 &&
           offerListings.map((listing) => (
             <SwiperSlide key={listing._id}>
-              <div
-                style={{
-                  background: `url(${listing.imageUrls[0]}) center no-repeat`,
-                  backgroundSize: 'cover',
-                }}
-                className='h-[500px]'
-              ></div>
+              {listing.imageUrls && listing.imageUrls[0] ? (
+                <div
+                  style={{
+                    background: `url(${listing.imageUrls[0]}) center no-repeat`,
+                    backgroundSize: 'cover',
+                  }}
+                  className='h-[500px]'
+                ></div>
+              ) : (
+                <div className='h-[500px] flex items-center justify-center text-white'>
+                  No Image Available
+                </div>
+              )}
             </SwiperSlide>
           ))}
       </Swiper>

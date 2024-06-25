@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import ListingItem from "../components/ListingItem"
 
 
 function Search() {
@@ -15,6 +16,7 @@ function Search() {
     })
     const [loading, setLoading] = useState(false)
     const [listings, setListings] = useState([])
+    const [showMore, setShowMore] = useState(false)
     
     useEffect(() => {
         const urlParams = new URLSearchParams(location.search);
@@ -46,6 +48,7 @@ function Search() {
         }
         const fetchListings = async () => {
             setLoading(true);
+            setShowMore(true);
             const searchQuery = urlParams.toString();
                 const res = await fetch(`/api/listing/get?${searchQuery}`);
                 const data = await res.json();
@@ -57,10 +60,18 @@ function Search() {
                     }));
                     return { ...listing, imageUrls };
                     }));
+                console.log("fetchDataLength" , data.length);
+                if (data.length > 8) {
+                    setShowMore(true);
+                } else {
+                    setShowMore(false);
+                }
+                
                 setListings(listingsWithImages)
                 setLoading(false)
         };
         fetchListings()
+        console.log("showMore" , showMore);
     }, [location.search])
 
 
@@ -97,6 +108,29 @@ function Search() {
         urlParams.set("order", sidebardata.order);
         const searchQuery = urlParams.toString();
         navigate(`/search?${searchQuery}`)
+    }
+
+
+    const onShowMoreClick = async () => {
+        const startIndex = listings.length
+        const urlParams = new URLSearchParams(location.search);
+        urlParams.set("startIndex", startIndex);
+        const searchQuery = urlParams.toString();
+        console.log("searchQuery", searchQuery)
+        const res = await fetch(`/api/listing/get?${searchQuery}`);
+        const data = await res.json();
+        if (data.length < 9) {
+            setShowMore(false)
+        }
+        const listingsWithImages = await Promise.all(data.map(async (listing) => {
+            const imageUrls = await Promise.all(listing.imageKeys.map(async (imageKey) => {
+                const imageRes = await fetch(`/api/images/Url/${imageKey}`);
+                const imageData = await imageRes.json();
+                return imageData.imageUrl;
+            }));
+            return { ...listing, imageUrls };
+            }));
+        setListings([...listings, ...listingsWithImages])
     }
 
 
@@ -160,11 +194,19 @@ function Search() {
                 <button className=" bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95">Search</button>
             </form>
         </div>
-        <div className="">
+        <div className=" flex-1">
             <h1 className=" text-3xl font-semibold border-b p-3 text-slate-700 mt-5">Listing Results:</h1>
-            <div className="">
+            <div className=" p-7 flex flex-wrap gap-4">
                 {!loading && listings.length === 0 && 
                 ( <p className=" test-xl text-slate-700">No Listing found!</p> )}
+                {loading && <p className=" text-xl text-slate-700 text-center w-full">Loading...</p>}
+                { !loading && listings && listings.map((listing) => (
+                    <ListingItem key={listing._id} listing={listing}/>
+                ))}
+                { showMore && <button onClick={onShowMoreClick} className=" text-green-700 hover:underline p-7 text-center w-full">
+                    Show More
+                </button>
+                }
             </div>
         </div>
     </div>

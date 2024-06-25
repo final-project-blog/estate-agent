@@ -39,7 +39,7 @@ const Listing = () => {
                 console.log("data.imagekeys",data.imagekeys)
                 const imageUrls = await Promise.all(
                     data.imageKeys.map(async (imageKey) => {
-                        const imageRes = await fetch(`http://localhost:3000/api/images/Url/${imageKey}`);
+                        const imageRes = await fetch(`/api/images/Url/${imageKey}`);
                         const imageData = await imageRes.json();
                         console.log("imageData:", imageData);
                     return imageData.imageUrl;
@@ -102,7 +102,7 @@ const Listing = () => {
                         {
                             listing.offer && (
                                 <p className=" bg-green-900 w-full max-w-[200px] text-white text-center p-1 rounded-md">
-                                    ${+listing.regularPrice - +listing.discountPrice}
+                                    ${+listing.regularPrice - +listing.discountPrice} Discount
                                 </p>
                             )
                         }

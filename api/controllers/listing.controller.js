@@ -90,11 +90,11 @@ const deleteListing = async (req, res, next) => {
         const order = req.query.order || 'desc';
 
         const listings = await Listing.find({
-            $text: { $search: searchTerm },
+            name: { $regex: searchTerm, $options: 'i' },
             type: type,
             offer: offer,
             furnished: furnished,
-            parking: parking,
+            parking: parking
         })
             .sort({ [sort]: order })
             .skip(startIndex)

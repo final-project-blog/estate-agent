@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  estate-agent-backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URI: "mongodb+srv://engahmadalebrahim:HoBt5fShJm7jycY6@estate-agent.6f9v6zh.mongodb.net/?retryWrites=true&w=majority&appName=estate-agent"
+    depends_on:
+      - mongo
+    links:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

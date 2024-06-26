@@ -4,11 +4,15 @@ metadata:
   name: estate-agent
   namespace: argocd
 spec:
-  project: estate-agent
+  project: default
   source:
-    repoURL: https://github.com/final-project-blog/estate-agent
+    repoURL: 'https://github.com/final-project-blog/estate-agent.git'
     targetRevision: HEAD
-    path: deployment
+    path: k8s
   destination:
-    server: https://kubernetes.default.svc
+    server: 'https://kubernetes.default.svc'
     namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

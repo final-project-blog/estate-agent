@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: estate-agent-frontend
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: estate-agent-frontend
+  template:
+    metadata:
+      labels:
+        app: estate-agent-frontend
+    spec:
+      containers:
+      - name: estate-agent-frontend
+        image: 514011952473.dkr.ecr.eu-central-1.amazonaws.com/estate-agent-frontend:latest
+        ports:
+        - containerPort: 80
+
+

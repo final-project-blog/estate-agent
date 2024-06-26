@@ -43,14 +43,13 @@ module "vpc" {
 
   public_subnet_tags = {
     "kubernetes.io/cluster/${var.clustername}" = "shared"
-    "kubernetes.io/role/elb"                      = 1
+    "kubernetes.io/role/elb"                   = 1
   }
 
   private_subnet_tags = {
     "kubernetes.io/cluster/${var.clustername}" = "shared"
-    "kubernetes.io/role/internal-elb"             = 1
+    "kubernetes.io/role/internal-elb"          = 1
   }
-
 }
 
 module "eks" {
@@ -71,36 +70,33 @@ module "eks" {
 
   eks_managed_node_groups = {
     one = {
-        name = "nodegroup-1"
-        instance_types = ["t3.small"]
-
-        min_size = 2
-        max_size = 3
-        desired_size = 2
+      name           = "nodegroup-1"
+      instance_types = ["t3.small"]
+      min_size       = 2
+      max_size       = 3
+      desired_size   = 2
     }
   }
 }
 
-resource "null_resource" "update-kubeconfig" {
-  depends_on = [ module.eks ]
+resource "aws_instance" "example" {
+  ami           = "ami-0c0289212530be3e5" # Bitte stelle sicher, dass diese AMI ID in deiner Region gültig ist.
+  instance_type = "t2.micro"
+  count         = 3
 
-  provisioner "local-exec" {
-    command = "aws eks update-kubeconfig --name ${var.clustername} --region ${var.region}"
+  tags = {
+    Name = "example-instance-${count.index}"
+  }
+}
+resource "aws_instance" "example2" {
+  ami           = "ami-0ab82412fddf26d2c" 
+  instance_type = "t3.micro"  
+  tags = {
+    Name = "example-instance"
   }
 }
 
-resource "helm_release" "ingress-nginx" {
-  name = "ingress-nginx"
-  repository = "https://kubernetes.github.io/ingress-nginx"
-  chart = "ingress-nginx"
-  create_namespace = true
-  namespace = "ingress-nginx"
-}
 
-resource "helm_release" "argocd" {
-  name = "argocd"
-  repository = "https://argoproj.github.io/argo-helm"
-  chart = "argo-cd"
-  create_namespace = true
-  namespace = "argo-cd"
-}
+
+
+

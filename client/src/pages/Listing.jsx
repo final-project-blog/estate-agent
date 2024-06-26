@@ -46,7 +46,6 @@ const Listing = () => {
                     })
                 );
                 const updatedData = { ...data, imageUrls };
-                console.log("updatedData:", updatedData);
                 setListing(updatedData)
                 setLoading(false)
                 setError(false)

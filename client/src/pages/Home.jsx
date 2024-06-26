@@ -13,12 +13,24 @@ export default function Home() {
   
   SwiperCore.use([Navigation]);
 
+  const getListingsWithImages = async (listings) => {
+    return await Promise.all(listings.map(async (listing) => {
+        const imageUrls = await Promise.all(listing.imageKeys.map(async (imageKey) => {
+            const imageRes = await fetch(`/api/images/Url/${imageKey}`);
+            const imageData = await imageRes.json();
+            return imageData.imageUrl;
+        }));
+        return { ...listing, imageUrls };
+    }));
+};
+
   useEffect(() => {
     const fetchOfferListings = async () => {
       try {
         const res = await fetch('/api/listing/get?offer=true&limit=4');
         const data = await res.json();
-        setOfferListings(data);
+        const listingsWithImages = await getListingsWithImages(data);
+        setOfferListings(listingsWithImages);
         fetchRentListings();
       } catch (error) {
         console.log(error);
@@ -29,7 +41,8 @@ export default function Home() {
       try {
         const res = await fetch('/api/listing/get?type=rent&limit=4');
         const data = await res.json();
-        setRentListings(data);
+        const listingsWithImages = await getListingsWithImages(data);
+        setRentListings(listingsWithImages);
         fetchSaleListings();
       } catch (error) {
         console.log(error);
@@ -40,7 +53,8 @@ export default function Home() {
       try {
         const res = await fetch('/api/listing/get?type=sale&limit=4');
         const data = await res.json();
-        setSaleListings(data);
+        const listingsWithImages = await getListingsWithImages(data);
+        setSaleListings(listingsWithImages);
       } catch (error) {
         console.log(error);
       }
@@ -50,28 +64,27 @@ export default function Home() {
   }, []);
 
   return (
-    <div className='bg-blue-900 text-gray-800'>
-      {/* Top-Bereich */}
+    <div className=''>
       <div className='flex flex-col gap-6 p-28 px-3 max-w-6xl mx-auto'>
-        <h1 className='text-5xl lg:text-7xl font-bold text-gray-900'>
-          Finde dein nächstes <span className='text-yellow-300'>perfektes</span>
+        <h1 className=' text-slate-700 font-bold text-3xl lg:text-6xl'>Your <span className="text-slate-500">Dream Home</span> is here ...</h1>
+        <h1 className=" text-slate-700 font-bold text-3xl lg:text-6xl">
+          Find your <span className="text-slate-500">perfect</span>
           <br />
-          Zuhause mit Leichtigkeit
+          Place with ease
         </h1>
-        <div className='text-gray-400 text-base lg:text-lg'>
-          EstateAgent ist der beste Ort, um dein nächstes perfektes Zuhause zu finden.
+        <div className=' text-gray-400 text-xs sm:text-sm'>
+          Your Estate Agent will help you find your Home fast, easy and comfortable.
           <br />
-          Wir haben eine breite Palette von Immobilien zur Auswahl.
+          Our Expert support is between your Hands.
         </div>
         <Link
           to={'/search'}
-          className='text-base lg:text-lg text-blue-800 font-bold hover:underline'
+          className=' text-xs sm:text-sm text-blue-800 font-bold hover:underline'
         >
-          Jetzt starten...
+          Search now...
         </Link>
       </div>
 
-      {/* Swiper für Angebote */}
       <Swiper navigation>
         {offerListings &&
           offerListings.length > 0 &&
@@ -94,13 +107,12 @@ export default function Home() {
           ))}
       </Swiper>
 
-      {/* Auflistung der Angebote, Mieten und Verkäufe */}
       <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
         {offerListings && offerListings.length > 0 && (
           <div className=''>
             <div className='my-3'>
-              <h2 className='text-2xl font-semibold text-gray-600'>Aktuelle Angebote</h2>
-              <Link className='text-sm text-blue-800 hover:underline' to={'/search?offer=true'}>Mehr Angebote anzeigen</Link>
+              <h2 className='text-2xl font-semibold text-slate-600'>Recent Offers</h2>
+              <Link className='text-sm text-blue-800 hover:underline' to={'/search?offer=true'}>Show more Offers</Link>
             </div>
             <div className='flex flex-wrap gap-4'>
               {offerListings.map((listing) => (
@@ -112,8 +124,8 @@ export default function Home() {
         {rentListings && rentListings.length > 0 && (
           <div className=''>
             <div className='my-3'>
-              <h2 className='text-2xl font-semibold text-gray-600'>Aktuelle Mietobjekte</h2>
-              <Link className='text-sm text-blue-800 hover:underline' to={'/search?type=rent'}>Mehr Mietobjekte anzeigen</Link>
+              <h2 className='text-2xl font-semibold text-gray-600'>Recent Places for Rent</h2>
+              <Link className='text-sm text-blue-800 hover:underline' to={'/search?type=rent'}>Show more Places for Rent</Link>
             </div>
             <div className='flex flex-wrap gap-4'>
               {rentListings.map((listing) => (
@@ -125,8 +137,8 @@ export default function Home() {
         {saleListings && saleListings.length > 0 && (
           <div className=''>
             <div className='my-3'>
-              <h2 className='text-2xl font-semibold text-gray-600'>Aktuelle Verkaufsobjekte</h2>
-              <Link className='text-sm text-blue-800 hover:underline' to={'/search?type=sale'}>Mehr Verkaufsobjekte anzeigen</Link>
+              <h2 className='text-2xl font-semibold text-gray-600'>Recent Places for Sale</h2>
+              <Link className='text-sm text-blue-800 hover:underline' to={'/search?type=sale'}>Show more Places for Sale</Link>
             </div>
             <div className='flex flex-wrap gap-4'>
               {saleListings.map((listing) => (

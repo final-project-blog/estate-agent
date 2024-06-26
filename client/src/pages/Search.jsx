@@ -60,7 +60,6 @@ function Search() {
                     }));
                     return { ...listing, imageUrls };
                     }));
-                console.log("fetchDataLength" , data.length);
                 if (data.length > 8) {
                     setShowMore(true);
                 } else {

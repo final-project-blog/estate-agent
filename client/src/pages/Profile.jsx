@@ -39,6 +39,15 @@ export default function Profile() {
   const handleDeleteAccount = async () => {
     try {
       dispatch(deleteUserStart());
+      const listingsRes = await fetch(`/api/user/listings/${currentUser._id}`);
+      const userListings = await listingsRes.json();
+      if (userListings.success === false) {
+      setShowListingsError(true);
+      return;
+      }
+      for (const listing of userListings) {
+        await handleDeleteListing(listing._id);
+      }
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: 'DELETE',
       });
@@ -98,6 +107,7 @@ export default function Profile() {
       setShowListingsError(false);
       const res = await fetch(`api/user/listings/${currentUser._id}`)
       const data = await res.json();
+      console.log("data",data);
       if (data.success === false) {
         setShowListingsError(true);
         return;

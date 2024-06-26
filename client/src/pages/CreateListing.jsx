@@ -27,8 +27,9 @@ const CreateListing = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const getDownloadUrl = async (fileKey) => {
-        const result = await fetch(`/api/images/Url/${fileKey}`)
-        return result.data.imageUrl
+        const response = await fetch(`/api/images/Url/${fileKey}`)
+        const result = await response.json()
+        return result.imageUrl
     }
     const UploadImages = async () => {
         setUploading(true);

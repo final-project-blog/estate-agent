@@ -46,7 +46,15 @@ export default function Profile() {
       return;
       }
       for (const listing of userListings) {
-        await handleDeleteListing(listing._id);
+        const imageKeys = listing.imageKeys
+        for (const key of imageKeys) {
+          await fetch(`/api/images/delete/${key}`, {
+            method: 'DELETE',
+          });
+        }
+        await fetch(`/api/listing/delete/${listing._id}`, {
+          method: 'DELETE',
+        });
       }
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: 'DELETE',

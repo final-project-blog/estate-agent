@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-estate-agent-backend
+  labels:
+    app: estate-agent
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: estate-agent
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: estate-agent
+        tier: backend
+    spec:
+      containers:
+        - name: api-estate-agent-backend
+          image: dd8da757b809 
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MONGO_URI
+              value: mongodb://mongo-service:27017/deine-datenbank  # Hier die MongoDB Verbindungs-URL eintragen
+            - name: JWT_SECRET
+              value: "123kjklasdljdic"

@@ -1,20 +1,25 @@
-# Verwende ein passendes Basisimage, hier als Beispiel Node.js 14
-FROM node:14
+# Verwende ein neueres Node.js Basisimage
+FROM node:16
 
-# Setze das Arbeitsverzeichnis innerhalb des Containers
+# Setze das Arbeitsverzeichnis
 WORKDIR /usr/src/app
 
-# Kopiere die Abhängigkeitsdateien
+# Kopiere package.json und package-lock.json
 COPY package*.json ./
 
-# Installiere die Abhängigkeiten, einschließlich einer spezifischen Version von bcrypt
-RUN npm install bcrypt@5.0.1
+# Installiere Abhängigkeiten und baue native Module neu
+RUN npm install && npm rebuild bcrypt --build-from-source
 
-# Kopiere den gesamten Anwendungscode in das Arbeitsverzeichnis
+# Kopiere Anwendungscode
 COPY . .
 
-# Baue die Anwendung
-RUN npm run build
+# Setze Umgebungsvariablen
+ARG MONGO_URI
+ENV MONGO_URI=${MONGO_URI}
 
-# Setze das Standardkommando für den Container
-CMD ["node", "index.js"]
+# Exponiere den Port
+EXPOSE 3000
+
+# Startbefehl für die Anwendung
+CMD ["npm", "start"]
+

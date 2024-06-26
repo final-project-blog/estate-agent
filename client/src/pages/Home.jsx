@@ -79,7 +79,7 @@ export default function Home() {
             <SwiperSlide key={listing._id}>
               <div
                 style={{
-                  background: `url(${listing.imageUrls[0]}) center no-repeat`,
+                  background: `url(${(listing.imageUrls && listing.imageUrls.length > 0) ? listing.imageUrls[0] : ''}) center no-repeat`,
                   backgroundSize: 'cover',
                 }}
                 className='h-[500px]'

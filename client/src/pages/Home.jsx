@@ -5,6 +5,7 @@ import { Navigation } from 'swiper/modules';
 import SwiperCore from 'swiper';
 import 'swiper/css/bundle';
 import ListingItem from '../components/ListingItem';
+import { getListingsWithImages } from '../utils/images.util';
 
 export default function Home() {
   const [offerListings, setOfferListings] = useState([]);
@@ -12,17 +13,6 @@ export default function Home() {
   const [rentListings, setRentListings] = useState([]);
   
   SwiperCore.use([Navigation]);
-
-  const getListingsWithImages = async (listings) => {
-    return await Promise.all(listings.map(async (listing) => {
-        const imageUrls = await Promise.all(listing.imageKeys.map(async (imageKey) => {
-            const imageRes = await fetch(`/api/images/Url/${imageKey}`);
-            const imageData = await imageRes.json();
-            return imageData.imageUrl;
-        }));
-        return { ...listing, imageUrls };
-    }));
-};
 
   useEffect(() => {
     const fetchOfferListings = async () => {

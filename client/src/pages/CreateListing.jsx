@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from  "axios";
 import {useSelector} from "react-redux"
 import { useNavigate } from "react-router-dom";
+import { storeImage } from "../utils/images.util";
 const CreateListing = () => {
 
     const navigate = useNavigate()
@@ -9,7 +9,7 @@ const CreateListing = () => {
     const {currentUser} = useSelector(state => state.user)
     const [formData, setFormData] = useState({
         imageKeys: [],
-        imageUrl: [],
+        imageUrls: [],
         name: "",
         description: "",
         address: "",
@@ -26,24 +26,14 @@ const CreateListing = () => {
     const [uploading, setUploading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
-    const storeImage = async ({image}) => {
-        const formData = new FormData()
-        formData.append("image", image)
-        const result = await axios.post('http://localhost:3000/api/images/upload', formData, {
-            headers: {
-                'Content-Type': 'form-data'
-            }
-        })
-        return result.data.imageKey
-    }
     const getDownloadUrl = async (fileKey) => {
-        const result = await axios.get(`http://localhost:3000/api/images/Url/${fileKey}`)
+        const result = await fetch(`/api/images/Url/${fileKey}`)
         return result.data.imageUrl
     }
     const UploadImages = async () => {
         setUploading(true);
         setImageUploadError(false);
-        if (files.length > 0 && files.length + formData.imageUrl.length < 7) {
+        if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
             try {
                 const keyPromises = [];
                 for (let i = 0; i < files.length; i++) {
@@ -58,8 +48,8 @@ const CreateListing = () => {
                     urlPromises.push(getDownloadUrl(updatedKeys[j]));
                 }
                 const urls = await Promise.all(urlPromises);
-                const updatedUrls = formData.imageUrl.concat(urls);
-                setFormData(prevFormData => ({ ...prevFormData, imageUrl: updatedUrls }));
+                const updatedUrls = formData.imageUrls.concat(urls);
+                setFormData(prevFormData => ({ ...prevFormData, imageUrls: updatedUrls }));
 
                 setImageUploadError(false);
                 setUploading(false);
@@ -76,11 +66,13 @@ const CreateListing = () => {
 
     const handleRemoveImage = async (index) => {
 
-        await axios.delete(`http://localhost:3000/api/images/delete/${formData.imageKeys[index]}`)
+        await fetch(`/api/images/delete/${formData.imageKeys[index]}`, {
+            method: 'DELETE'
+        });
         setFormData({
             ...formData,
             imageKeys: formData.imageKeys.filter((_, i) => i !== index),
-            imageUrl: formData.imageUrl.filter((_, i) => i !== index),
+            imageUrls: formData.imageUrls.filter((_, i) => i !== index),
         })
     };
     const handleChange = (e) => {
@@ -247,7 +239,7 @@ const CreateListing = () => {
                 </div>
                 <p className="text-red-700 text-sm">{imageUploadError && imageUploadError}</p>
                 {
-                    formData.imageUrl.length > 0 && formData.imageUrl.map((url, index) => (
+                    formData.imageUrls.length > 0 && formData.imageUrls.map((url, index) => (
                         <div key={index} className="flex justify-between p-3 border items-center">
                             <img src={url} alt="listing image" className="w-20 h-20 object-contain rounded-lg" />
                             <button type="button" onClick={()=> handleRemoveImage (index)} className="p-3 text-red-700 rounded-lg uppercase hover:opacity-80">Delete</button>

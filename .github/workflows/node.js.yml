@@ -1,98 +1,84 @@
-name: CICD
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - master
 
+env:
+  AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Cache Docker layers
-        uses: actions/cache@v2
+          node-version: 'latest'
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+          name: frontend
+          path: frontend/dist
 
-      - name: Build and Push Backend Docker Image
-        run: |
-          docker buildx build --platform linux/amd64 -t yourdockerhubusername/estate-agent-backend:latest --push ./backend
-
-      - name: Build and Push Frontend Docker Image
-        run: |
-          docker buildx build --platform linux/amd64 -t yourdockerhubusername/estate-agent-frontend:latest --push ./frontend
-
-  deploy:
+  upload_to_s3:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v3
-
-      - name: Connect to EC2
-        uses: appleboy/ssh-action@master
+      - uses: actions/checkout@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          port: 22
-
-      - name: Pull Backend Image from Docker Hub
-        run: docker pull yourdockerhubusername/estate-agent-backend:latest
-
-      - name: Pull Frontend Image from Docker Hub
-        run: docker pull yourdockerhubusername/estate-agent-frontend:latest
-
-      - name: Create Docker Network
+          name: frontend
+          path: frontend/dist
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Upload to S3
         run: |
-          docker network create app-network || true
+          aws s3 cp frontend/dist s3://$AWS_S3_BUCKET/ --recursive
 
-      - name: Stop and Remove Previous Backend Container
+  deploy:
+    needs: upload_to_s3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add host to known_hosts
         run: |
-          docker stop estate-agent-backend || true
-          docker rm estate-agent-backend || true
-
-      - name: Run Backend Container
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.INSTANCE_IP }} >> ~/.ssh/known_hosts
+          ssh-keyscan ${{ secrets.PUBLIC_IP }} >> ~/.ssh/known_hosts
+      - name: Set up Ansible
         run: |
-          docker run -d --name estate-agent-backend \
-            --network app-network \
-            -p 3000:3000 \
-            -e MONGO_URI="${{ secrets.MONGO_URI }}" \
-            yourdockerhubusername/estate-agent-backend:latest
-
-      - name: Stop and Remove Previous Frontend Container
+          echo "$PRIVATE_KEY" > ./ex-key.pem
+          chmod 600 ex-key.pem
+          export ANSIBLE_HOST_KEY_CHECKING=False
+      - name: Copy backend to EC2
         run: |
-          docker stop estate-agent-frontend || true
-          docker rm estate-agent-frontend || true
-
-      - name: Run Frontend Container
+          scp -i ex-key.pem -r backend ec2-user@${{ secrets.PUBLIC_IP }}:/home/ec2-user/backend
+      - name: Run Ansible playbook
         run: |
-          docker run -d --name estate-agent-frontend \
-            --network app-network \
-            -p 80:80 \
-            yourdockerhubusername/estate-agent-frontend:latest
+          ansible-playbook deploy_backend.yml --private-key=./ex-key.pem
+          rm -f ./ex-key.pem
 
-      - name: Docker Compose Up
+  start-backend:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start backend on EC2
         run: |
-          docker-compose down || true
-          docker-compose up -d
-
+          ssh -i ./ex-key.pem ec2-user@${{ secrets.PUBLIC_IP }} "cd /home/ec2-user/backend && npm install && npm start"
 
 

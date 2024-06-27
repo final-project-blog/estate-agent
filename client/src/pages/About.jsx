@@ -1,15 +1,15 @@
 
 const About = () => {
   return (
-    <div className=" min-h-screen flex items-center justify-center p-6">
+    <div className=" min-h-screen flex items-center justify-center p-10">
       <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl w-full">
         <h1 className="text-4xl font-bold mb-4">About Us</h1>
         <p className="mb-4">
-          Welcome to <strong>Your Estate Agent </strong>, your premier destination for all things real estate. Whether you're looking to buy, sell, or rent a property, we are committed to providing you with exceptional service and unparalleled expertise in the real estate market. Our goal is to make your real estate journey as smooth and successful as possible.
+          Welcome to your<strong> Estate Agent </strong>, your premier destination for all things real estate. Whether you are looking to buy, sell, or rent a property, we are committed to providing you with exceptional service and unparalleled expertise in the real estate market. Our goal is to make your real estate journey as smooth and successful as possible.
         </p>
         <h2 className="text-2xl font-semibold mb-2">Who We Are</h2>
         <p className="mb-4">
-          At <strong>Your Estate Agent </strong>, we are a team of dedicated real estate professionals with years of experience in the industry. Our diverse team includes licensed real estate agents, marketing experts, and customer service specialists, all working together to deliver the best possible experience for our clients. We pride ourselves on our deep understanding of the real estate market and our ability to meet the unique needs of each client.
+          At <strong> Estate Agent </strong>, we are a team of dedicated real estate professionals with years of experience in the industry. Our diverse team includes licensed real estate agents, marketing experts, and customer service specialists, all working together to deliver the best possible experience for our clients. We pride ourselves on our deep understanding of the real estate market and our ability to meet the unique needs of each client.
         </p>
         <h2 className="text-2xl font-semibold mb-2">Our Mission</h2>
         <p className="mb-4">
@@ -31,7 +31,7 @@ const About = () => {
           <li>Community Focused</li>
         </ul>
         <p>
-          Thank you for choosing <strong>Your Estate Agent </strong>. We look forward to helping you achieve your real estate goals. If you have any questions or need assistance, please don't hesitate to contact us. Together, let's make your real estate dreams a reality.
+          Thank you for choosing <strong> Estate Agent </strong>. We look forward to helping you achieve your real estate goals. If you have any questions or need assistance, please don't hesitate to contact us. Together, let's make your real estate dreams a reality.
         </p>
       </div>
     </div>

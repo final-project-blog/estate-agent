@@ -27,7 +27,6 @@ export const storeImage = async ({ image }) => {
             body: formData,
         });
     const result = await response.json();
-    console.log('Image uploaded successfully:', result);
     return result.imageKey;
     } catch (error) {
         console.error('Error uploading image:', error);

@@ -1,5 +1,5 @@
 # Verwende ein neueres Node.js Basisimage
-FROM node:16
+FROM node:lts-alpine
 
 # Setze das Arbeitsverzeichnis
 WORKDIR /usr/src/app
@@ -8,14 +8,11 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Installiere Abhängigkeiten und baue native Module neu
-RUN npm install && npm rebuild bcrypt --build-from-source
+RUN npm install 
 
 # Kopiere Anwendungscode
 COPY . .
 
-# Setze Umgebungsvariablen
-ARG MONGO_URI
-ENV MONGO_URI=${MONGO_URI}
 
 # Exponiere den Port
 EXPOSE 3000

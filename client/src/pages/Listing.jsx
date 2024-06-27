@@ -8,6 +8,7 @@ import 'swiper/css/bundle'
 import {
     FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare} from "react-icons/fa"
 import Contact from "../components/Contact";
+import { getListingsWithImages } from "../utils/images.util";
 
 
 
@@ -21,8 +22,6 @@ const Listing = () => {
     const [copied, setCopied] = useState(false)
     const {currentUser} = useSelector((state) => state.user)
     const [contact, setContact] = useState(false)
-    // console.log("currentUser._id", currentUser._id)
-    // console.log("listing.userRef", listing.userRef)
 
     useEffect(() => {
         const fetchListing= async () => {
@@ -30,24 +29,13 @@ const Listing = () => {
                 setLoading(true)
                 const response = await fetch(`/api/listing/get/${params.listingId}`);
                 const data = await response.json()
-                console.log("data",data);
                 if (data.success === false) {
                     setError(true)
                     setLoading(false)
                     return
                 }
-                console.log("data.imagekeys",data.imagekeys)
-                const imageUrls = await Promise.all(
-                    data.imageKeys.map(async (imageKey) => {
-                        const imageRes = await fetch(`/api/images/Url/${imageKey}`);
-                        const imageData = await imageRes.json();
-                        console.log("imageData:", imageData);
-                    return imageData.imageUrl;
-                    })
-                );
-                const updatedData = { ...data, imageUrls };
-                console.log("updatedData:", updatedData);
-                setListing(updatedData)
+                const listingWithImages = await getListingsWithImages(data);
+                setListing(listingWithImages)
                 setLoading(false)
                 setError(false)
                 

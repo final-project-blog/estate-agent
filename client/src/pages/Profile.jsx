@@ -12,7 +12,7 @@ import {
   signOutUserFailure,
   signOutUserSuccess,
 } from '../redux/user/userSlice';
-import axios from 'axios';
+import { getListingsWithImages } from '../utils/images.util';
 
 
 export default function Profile() {
@@ -46,7 +46,15 @@ export default function Profile() {
       return;
       }
       for (const listing of userListings) {
-        await handleDeleteListing(listing._id);
+        const imageKeys = listing.imageKeys
+        for (const key of imageKeys) {
+          await fetch(`/api/images/delete/${key}`, {
+            method: 'DELETE',
+          });
+        }
+        await fetch(`/api/listing/delete/${listing._id}`, {
+          method: 'DELETE',
+        });
       }
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: 'DELETE',
@@ -107,19 +115,11 @@ export default function Profile() {
       setShowListingsError(false);
       const res = await fetch(`api/user/listings/${currentUser._id}`)
       const data = await res.json();
-      console.log("data",data);
       if (data.success === false) {
         setShowListingsError(true);
         return;
       }
-      const listingsWithImages = await Promise.all(data.map(async (listing) => {
-        const imageUrls = await Promise.all(listing.imageKeys.map(async (imageKey) => {
-          const imageRes = await fetch(`/api/images/Url/${imageKey}`);
-          const imageData = await imageRes.json();
-          return imageData.imageUrl;
-        }));
-        return { ...listing, imageUrls };
-      }));
+      const listingsWithImages = await getListingsWithImages(data);
       setUserListings(listingsWithImages);
     } catch (error) {
       setShowListingsError(true);
@@ -128,7 +128,6 @@ export default function Profile() {
 
 
   const handleDeleteListing = async (listingId) => {
-    console.log(userListings);
     try {
         const listingToDelete = userListings.find((listing) => listing._id === listingId);
         if (!listingToDelete) {
@@ -143,7 +142,9 @@ export default function Profile() {
       }
 
       await Promise.all(listingToDelete.imageKeys.map(async (imageKey) => {
-        await axios.delete(`/api/images/delete/${imageKey}`);
+        await fetch(`/api/images/delete/${imageKey}`, {
+          method: 'DELETE'
+        });
       }));
 
       setUserListings((prevListings) => prevListings.filter((listing) => listing._id !== listingId));

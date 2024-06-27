@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import ListingItem from "../components/ListingItem"
+import { getListingsWithImages } from "../utils/images.util"
 
 
 function Search() {
@@ -52,26 +53,16 @@ function Search() {
             const searchQuery = urlParams.toString();
                 const res = await fetch(`/api/listing/get?${searchQuery}`);
                 const data = await res.json();
-                const listingsWithImages = await Promise.all(data.map(async (listing) => {
-                    const imageUrls = await Promise.all(listing.imageKeys.map(async (imageKey) => {
-                        const imageRes = await fetch(`/api/images/Url/${imageKey}`);
-                        const imageData = await imageRes.json();
-                        return imageData.imageUrl;
-                    }));
-                    return { ...listing, imageUrls };
-                    }));
-                console.log("fetchDataLength" , data.length);
+                const listingsWithImages = await getListingsWithImages(data);
                 if (data.length > 8) {
                     setShowMore(true);
                 } else {
                     setShowMore(false);
                 }
-                
                 setListings(listingsWithImages)
                 setLoading(false)
         };
         fetchListings()
-        console.log("showMore" , showMore);
     }, [location.search])
 
 
@@ -116,20 +107,12 @@ function Search() {
         const urlParams = new URLSearchParams(location.search);
         urlParams.set("startIndex", startIndex);
         const searchQuery = urlParams.toString();
-        console.log("searchQuery", searchQuery)
         const res = await fetch(`/api/listing/get?${searchQuery}`);
         const data = await res.json();
         if (data.length < 9) {
             setShowMore(false)
         }
-        const listingsWithImages = await Promise.all(data.map(async (listing) => {
-            const imageUrls = await Promise.all(listing.imageKeys.map(async (imageKey) => {
-                const imageRes = await fetch(`/api/images/Url/${imageKey}`);
-                const imageData = await imageRes.json();
-                return imageData.imageUrl;
-            }));
-            return { ...listing, imageUrls };
-            }));
+        const listingsWithImages = await getListingsWithImages(data);
         setListings([...listings, ...listingsWithImages])
     }
 

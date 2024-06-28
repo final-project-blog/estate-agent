@@ -101,5 +101,5 @@ jobs:
           "
         env:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_HOST: ${{ secrets.INSTANCE_IP }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}

@@ -26,6 +26,7 @@ jobs:
           cd client
           npm install
           npm run build
+          ls -al client/dist  # Check if the build directory exists
 
       - name: Upload frontend artifacts
         uses: actions/upload-artifact@v4
@@ -37,12 +38,17 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download frontend artifacts
         uses: actions/download-artifact@v4
         with:
           name: frontend
           path: client/dist
 
+      - name: Verify downloaded artifacts
+        run: ls -al client/dist  
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -87,6 +93,3 @@ jobs:
       - name: Start backend on EC2
         run: |
           ssh -i ./ex-key.pem ec2-user@${{ secrets.PUBLIC_IP }} "cd /home/ec2-user/api && npm install && npm start"
-
-
-

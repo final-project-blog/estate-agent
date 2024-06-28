@@ -63,7 +63,7 @@ jobs:
           aws s3 cp client/dist s3://$AWS_S3_BUCKET/ --recursive
 
   build_and_deploy_backend:
-    name: Build and Deploy Backend
+    needs: upload_to_s3
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

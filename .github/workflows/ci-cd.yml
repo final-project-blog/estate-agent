@@ -75,24 +75,26 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
+      
       - name: Build and push backend Docker image
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/backend-image:${{ github.run_number }} .
-          docker push ${{ secrets.DOCKER_USERNAME }}/backend-image:${{ github.run_number }}
-          docker tag ${{ secrets.DOCKER_USERNAME }}/backend-image:${{ github.run_number }} ${{ secrets.DOCKER_USERNAME }}/backend-image:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/backend-image:latest
-    
+          run: |
+            cd api  # Wechsel in das Verzeichnis, das den Dockerfile enthält
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/backend-image:${{ github.run_number }} .
+            docker push ${{ secrets.DOCKER_USERNAME }}/backend-image:${{ github.run_number }}
+            docker tag ${{ secrets.DOCKER_USERNAME }}/backend-image:${{ github.run_number }} ${{ secrets.DOCKER_USERNAME }}/backend-image:latest
+            docker push ${{ secrets.DOCKER_USERNAME }}/backend-image:latest
+      
       - name: Install Docker on EC2 and run container
-        run: |
-          echo "$PRIVATE_KEY" > ./private_key.pem
-          chmod 600 ./private_key.pem
-          ssh -i ./private_key.pem -o StrictHostKeyChecking=no $EC2_HOST "
-            sudo yum update -y
-            sudo yum install -y docker
-            sudo service docker start
-            sudo docker run -d -p 80:5000 $DOCKER_USERNAME/backend-image:latest
-          "
+          run: |
+            echo "$PRIVATE_KEY" > ./private_key.pem
+            chmod 600 ./private_key.pem
+            ssh -i ./private_key.pem -o StrictHostKeyChecking=no $EC2_HOST "
+              sudo yum update -y
+              sudo yum install -y docker
+              sudo service docker start
+              sudo docker run -d -p 80:5000 $DOCKER_USERNAME/backend-image:latest
+            "
         env:
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+            PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+            EC2_HOST: ${{ secrets.EC2_HOST }}
+            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}

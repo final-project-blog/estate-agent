@@ -8,7 +8,8 @@ on:
 env:
   AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
   PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-  EC2_HOST: ${{ secrets.EC2_HOST }}
+  INSTANCE_IP: ${{ secrets.INSTANCE_IP }}  # Hier wird das geheime EC2_HOST durch INSTANCE_IP ersetzt
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
 jobs:
   build:
@@ -79,27 +80,24 @@ jobs:
       - name: Build and push backend Docker image
         run: |
           cd api  # Wechsel in das Verzeichnis, das den Dockerfile enthält
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/backend-image:${{ github.run_number }} .
-          docker push ${{ secrets.DOCKER_USERNAME }}/backend-image:${{ github.run_number }}
-          docker tag ${{ secrets.DOCKER_USERNAME }}/backend-image:${{ github.run_number }} ${{ secrets.DOCKER_USERNAME }}/backend-image:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/backend-image:latest
+          docker build -t $DOCKER_USERNAME/backend-image:${{ github.run_number }} .
+          docker push $DOCKER_USERNAME/backend-image:${{ github.run_number }}
+          docker tag $DOCKER_USERNAME/backend-image:${{ github.run_number }} $DOCKER_USERNAME/backend-image:latest
+          docker push $DOCKER_USERNAME/backend-image:latest
       
       - name: Debug Environment Variables
         run: |
-          echo "EC2_HOST: $EC2_HOST"
+          echo "EC2_HOST: $INSTANCE_IP"
           echo "DOCKER_USERNAME: $DOCKER_USERNAME"
 
       - name: Install Docker on EC2 and run container
         run: |
           echo "$PRIVATE_KEY" > ./private_key.pem
           chmod 600 ./private_key.pem
-          ssh -i ./private_key.pem -o StrictHostKeyChecking=no $EC2_HOST "
+          ssh -i ./private_key.pem -o StrictHostKeyChecking=no $INSTANCE_IP "
             sudo yum update -y
             sudo yum install -y docker
             sudo service docker start
             sudo docker run -d -p 80:5000 $DOCKER_USERNAME/backend-image:latest
           "
-        env:
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          EC2_HOST: ${{ secrets.INSTANCE_IP }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+

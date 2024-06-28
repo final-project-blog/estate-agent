@@ -26,7 +26,7 @@ jobs:
           cd client
           npm install
           npm run build
-          ls -al client/dist  # Check if the build directory exists
+          ls -al ./dist  
 
       - name: Upload frontend artifacts
         uses: actions/upload-artifact@v4

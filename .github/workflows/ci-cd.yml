@@ -84,6 +84,11 @@ jobs:
           docker tag ${{ secrets.DOCKER_USERNAME }}/backend-image:${{ github.run_number }} ${{ secrets.DOCKER_USERNAME }}/backend-image:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/backend-image:latest
       
+      - name: Debug Environment Variables
+        run: |
+          echo "EC2_HOST: $EC2_HOST"
+          echo "DOCKER_USERNAME: $DOCKER_USERNAME"
+
       - name: Install Docker on EC2 and run container
         run: |
           echo "$PRIVATE_KEY" > ./private_key.pem

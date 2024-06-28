@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
@@ -21,6 +22,6 @@ export default defineConfig({
     lineClamp
   ],
   define: {
-    'process.env.VITE_BACKEND_URL': JSON.stringify(process.env.BACKEND_URL),
-  }
+    'process.env.BACKEND_URL': JSON.stringify(process.env.BACKEND_URL),
+},
 })

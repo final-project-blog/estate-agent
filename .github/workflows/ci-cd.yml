@@ -1,5 +1,10 @@
-name: ci-cd pipeline
-on: [push]
+name: CI-CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
 env:
   AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
   PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}

@@ -48,8 +48,6 @@ const CreateListing = () => {
     const getDownloadUrl = async (fileKey) => {
         const result = await fetch(`/api/images/Url/${fileKey}`)
         const data = await result.json()
-        console.log ("data: ", data);
-        console.log ("data.imageUrl: ", data.imageUrl);
         return data.imageUrl
     }
     const UploadImages = async () => {

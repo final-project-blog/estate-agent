@@ -80,9 +80,9 @@ module "eks" {
 }
 
 resource "aws_instance" "example" {
-  ami           = "ami-0c0289212530be3e5" # Bitte stelle sicher, dass diese AMI ID in deiner Region gültig ist.
+  ami           = "ami-0c0289212530be3e5" 
   instance_type = "t2.micro"
-  count         = 3
+  count         = 2
 
   tags = {
     Name = "example-instance-${count.index}"

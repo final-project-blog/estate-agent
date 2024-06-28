@@ -1,44 +1,84 @@
-name: Docker Build and Push
+name: CI/CD Pipeline
+
 on:
   push:
     branches:
       - master
+
+env:
+  AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - dockerfile: ./backend/Dockerfile
-            image: "nourajaz/estate-agent-backend"
-            context: ./backend
-          - dockerfile: ./frontend/Dockerfile
-            image: "nourajaz/estate-agent-frontend"
-            context: ./frontend
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
+          node-version: 'latest'
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
         with:
-          images: ${{ matrix.image }}
-          tags: |
-            type=semver,pattern={{version}}
+          name: frontend
+          path: frontend/dist
 
-      - name: Build and push Docker Images
-        uses: docker/build-push-action@v5
+  upload_to_s3:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
         with:
-          context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          name: frontend
+          path: frontend/dist
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Upload to S3
+        run: |
+          aws s3 cp frontend/dist s3://$AWS_S3_BUCKET/ --recursive
+
+  deploy:
+    needs: upload_to_s3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.INSTANCE_IP }} >> ~/.ssh/known_hosts
+          ssh-keyscan ${{ secrets.PUBLIC_IP }} >> ~/.ssh/known_hosts
+      - name: Set up Ansible
+        run: |
+          echo "$PRIVATE_KEY" > ./ex-key.pem
+          chmod 600 ex-key.pem
+          export ANSIBLE_HOST_KEY_CHECKING=False
+      - name: Copy backend to EC2
+        run: |
+          scp -i ex-key.pem -r backend ec2-user@${{ secrets.PUBLIC_IP }}:/home/ec2-user/backend
+      - name: Run Ansible playbook
+        run: |
+          ansible-playbook deploy_backend.yml --private-key=./ex-key.pem
+          rm -f ./ex-key.pem
+
+  start-backend:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start backend on EC2
+        run: |
+          ssh -i ./ex-key.pem ec2-user@${{ secrets.PUBLIC_IP }} "cd /home/ec2-user/backend && npm install && npm start"
+
+

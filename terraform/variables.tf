@@ -7,5 +7,5 @@ variable "region" {
 variable "clustername" {
   description = "estate-agent"
   type = string
-  default = "argo-ex-eks"
+  default = "estate-agent"
 }

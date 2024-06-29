@@ -7,9 +7,9 @@ on:
 
 env:
   AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-  PRIVATE_KEY: ${{ secrets.MY_EC2_SSH_KEY }}
   INSTANCE_IP: ${{ secrets.EC2_HOST }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
 jobs:
   build_frontend:
@@ -90,12 +90,15 @@ jobs:
     needs: build_backend
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: SSH into EC2 instance and deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.INSTANCE_IP }}
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.PRIVATE_KEY }}
+          key: ${{ secrets.MY_EC2_SSH_KEY }}
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest
             sudo docker stop estate-agent-backend || true

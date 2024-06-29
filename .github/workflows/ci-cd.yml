@@ -83,8 +83,8 @@ jobs:
         run: |
           cd api
           docker build -t estate-agent-backend .
-          docker tag estate-agent-backend:latest ${{ secrets.DOCKER_REPO_URL }}/estate-agent-backend:latest
-          docker push ${{ secrets.DOCKER_REPO_URL }}/estate-agent-backend:latest
+          docker tag estate-agent-backend:latest ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest
 
   deploy_backend_to_ec2:
     needs: build_backend
@@ -97,7 +97,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
-            sudo docker pull ${{ secrets.DOCKER_REPO_URL }}/estate-agent-backend:latest
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest
             sudo docker stop estate-agent-backend || true
             sudo docker rm estate-agent-backend || true
-            sudo docker run -d -p 3000:3000 --name estate-agent-backend ${{ secrets.DOCKER_REPO_URL }}/estate-agent-backend:latest
+            sudo docker run -d -p 3000:3000 --name estate-agent-backend ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest

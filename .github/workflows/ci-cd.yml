@@ -104,4 +104,4 @@ jobs:
             sudo docker stop estate-agent-backend || true
             sudo docker rm estate-agent-backend || true
             sudo docker run -d -p 3000:3000 --name estate-agent-backend ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest
-          '
+          

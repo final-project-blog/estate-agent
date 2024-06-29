@@ -10,11 +10,6 @@ env:
   INSTANCE_IP: ${{ secrets.EC2_HOST }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-  EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
-  MY_EC2_SSH_KEY: ${{ secrets.MY_EC2_SSH_KEY }}
 
 jobs:
   build_frontend:
@@ -24,19 +19,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '14.x'
+          node-version: '20.x'
 
       - name: Build frontend
         run: |
           cd client
           npm install
           npm run build
-          ls -al ./dist
+          ls -al ./dist  
 
       - name: Upload frontend artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: frontend
           path: client/dist
@@ -45,20 +40,24 @@ jobs:
     needs: build_frontend
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download frontend artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: frontend
           path: client/dist
 
       - name: Verify downloaded artifacts
-        run: ls -al client/dist
+        run: ls -al client/dist  
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Upload to S3
@@ -66,17 +65,16 @@ jobs:
           aws s3 cp client/dist s3://$AWS_S3_BUCKET/ --recursive
 
   build_backend:
-    needs: upload_frontend_to_s3
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -85,8 +83,8 @@ jobs:
         run: |
           cd api
           docker build -t estate-agent-backend .
-          docker tag estate-agent-backend:latest $DOCKER_USERNAME/estate-agent-backend:latest
-          docker push $DOCKER_USERNAME/estate-agent-backend:latest
+          docker tag estate-agent-backend:latest ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest
 
   deploy_backend_to_ec2:
     needs: build_backend
@@ -102,7 +100,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.MY_EC2_SSH_KEY }}
           script: |
-            sudo docker pull $DOCKER_USERNAME/estate-agent-backend:latest
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest
             sudo docker stop estate-agent-backend || true
             sudo docker rm estate-agent-backend || true
-            sudo docker run -d -p 3000:3000 --name estate-agent-backend $DOCKER_USERNAME/estate-agent-backend:latest
+            sudo docker run -d -p 3000:3000 --name estate-agent-backend ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest

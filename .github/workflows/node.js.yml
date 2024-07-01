@@ -17,6 +17,17 @@ jobs:
       run: |
         docker tag backend:1.0.0 ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0
         docker push ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0
+    - name: deploy-backend
+      env:
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SSH_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0 &&
+          sudo docker run -d -p 4000:4000 --name backend-container ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0
+        "
   build-frontend:
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +39,7 @@ jobs:
     - name: Installiere Abhängigkeiten
       run: |
         cd client
-        npm install
+        npm install --force
     - name: build-frontend
       run: |
         cd client
@@ -43,18 +54,3 @@ jobs:
     - name: Deploy Frontend to S3
       run: aws s3 sync ./client/dist s3://${{ secrets.AWS_S3_BUCKET }} --acl public-read --delete
       
-  deploy-backend:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set SSH connection
-      env:
-        SSH_KEY: ${{ secrets.SSH_KEY }}
-      run: |
-        mkdir -p ~/.ssh
-        echo "$SSH_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0 &&
-          sudo docker run -d -p 4000:4000 --name backend-container ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0
-        "

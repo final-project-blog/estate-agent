@@ -83,23 +83,26 @@ jobs:
           docker tag estate-agent-backend:latest $DOCKER_USERNAME/estate-agent-backend:latest
           docker push $DOCKER_USERNAME/estate-agent-backend:latest
 
+  
   deploy_backend:
     needs: build_backend
     runs-on: ubuntu-latest
     steps:
-      - name: Set up SSH connection
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ssh-private-key: ${{ secrets.MY_EC2_SSH_KEY }}
 
-      - name: Deploy backend to EC2
+      - name: Set up SSH key
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.EC2_HOST }} '
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest &&
-            sudo docker stop backend-container || true &&
-            sudo docker rm backend-container || true &&
-            sudo docker run -d -p 3000:3000 --name backend-container ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest
-          '
+          mkdir -p ~/.ssh
+          echo "${{ secrets.MY_EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} "
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest &&
+          sudo docker run -d -p 3000:3000 --name backend-container ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest
+          "
 
 
            

@@ -7,7 +7,6 @@ on:
 
 env:
   AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-  INSTANCE_IP: ${{ secrets.EC2_HOST }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 

@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import OAuth from "../components/OAuth";
 
-
+const backendUrl = import.meta.env.VITE_BACKEND_URL
 
 const SignUp = () => {
 
@@ -22,7 +22,7 @@ const SignUp = () => {
       return;
     }
     try {
-      const res = await fetch("http://3.121.231.45:3000/api/auth/signup",
+      const res = await fetch(`${backendUrl}/api/auth/signup`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

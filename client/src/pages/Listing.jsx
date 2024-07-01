@@ -15,6 +15,7 @@ import { getListingsWithImages } from "../utils/images.util";
 const Listing = () => {
 
     SwiperCore.use([Navigation])
+    const backendUrl = import.meta.env.VITE_BACKEND_URL
     const params = useParams()
     const [listing, setListing] = useState(null)
     const [loading, setLoading] = useState(true)
@@ -27,7 +28,7 @@ const Listing = () => {
         const fetchListing= async () => {
             try {
                 setLoading(true)
-                const response = await fetch(`http://3.121.231.45:3000/api/listing/get/${params.listingId}`);
+                const response = await fetch(`${backendUrl}/api/listing/get/${params.listingId}`);
                 const data = await response.json()
                 if (data.success === false) {
                     setError(true)

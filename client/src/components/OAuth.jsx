@@ -1,10 +1,10 @@
 
 
-
+const backendUrl = import.meta.env.VITE_BACKEND_URL
 const OAuth = () => {
     const handleGoogleClick = async () => {
         try {
-            window.location.href = "http://3.121.231.45:3000/api/auth/google";
+            window.location.href = `${backendUrl}/api/auth/google`;
         } catch (error) {
             console.log(" could not connect to Google", error);
         }

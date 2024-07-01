@@ -16,7 +16,7 @@ export default function Home() {
   const [rentListings, setRentListings] = useState([]);
   
   SwiperCore.use([Navigation]);
-  const backendUrl = import.meta.env.BACKEND_URL
+  const backendUrl = import.meta.env.VITE_BACKEND_URL
   console.log("backeneurl:", backendUrl);
   
   
@@ -25,7 +25,8 @@ export default function Home() {
   useEffect(() => {
     const fetchOfferListings = async () => {
       try {
-        const res = await fetch('http://3.121.231.45:3000/api/listing/get?offer=true&limit=4');
+        console.log("backendurl:", `${backendUrl}/api/listing/get?offer=true&limit=4`)
+        const res = await fetch(`${backendUrl}/api/listing/get?offer=true&limit=4`);
         const data = await res.json();
         const listingsWithImages = await getListingsWithImages(data);
         setOfferListings(listingsWithImages);
@@ -37,7 +38,7 @@ export default function Home() {
 
     const fetchRentListings = async () => {
       try {
-        const res = await fetch('http://3.121.231.45:3000/api/listing/get?type=rent&limit=4');
+        const res = await fetch(`${backendUrl}/api/listing/get?type=rent&limit=4`);
         const data = await res.json();
         const listingsWithImages = await getListingsWithImages(data);
         setRentListings(listingsWithImages);
@@ -49,7 +50,7 @@ export default function Home() {
 
     const fetchSaleListings = async () => {
       try {
-        const res = await fetch('http://3.121.231.45:3000/api/listing/get?type=sale&limit=4');
+        const res = await fetch(`${backendUrl}/api/listing/get?type=sale&limit=4`);
         const data = await res.json();
         const listingsWithImages = await getListingsWithImages(data);
         setSaleListings(listingsWithImages);

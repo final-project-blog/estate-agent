@@ -6,7 +6,7 @@ import {
   signInSuccess,
   signInFailure,
 } from '../redux/user/userSlice';
-
+const backendUrl = import.meta.env.VITE_BACKEND_URL
 export default function SignIn() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export default function SignIn() {
     e.preventDefault();
     try {
       dispatch(signInStart());
-      const res = await fetch('http://3.121.231.45:3000/api/auth/signin', {
+      const res = await fetch(`${backendUrl}/api/auth/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

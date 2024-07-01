@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import ListingItem from "../components/ListingItem"
 import { getListingsWithImages } from "../utils/images.util"
 
-
+const backendUrl = import.meta.env.VITE_BACKEND_URL
 function Search() {
     const navigate = useNavigate()
     const [sidebardata, setsidebardata] = useState({
@@ -51,7 +51,7 @@ function Search() {
             setLoading(true);
             setShowMore(true);
             const searchQuery = urlParams.toString();
-                const res = await fetch(`http://3.121.231.45:3000/api/listing/get?${searchQuery}`);
+                const res = await fetch(`${backendUrl}/api/listing/get?${searchQuery}`);
                 const data = await res.json();
                 const listingsWithImages = await getListingsWithImages(data);
                 if (data.length > 8) {
@@ -107,7 +107,7 @@ function Search() {
         const urlParams = new URLSearchParams(location.search);
         urlParams.set("startIndex", startIndex);
         const searchQuery = urlParams.toString();
-        const res = await fetch(`http://3.121.231.45:3000/api/listing/get?${searchQuery}`);
+        const res = await fetch(`${backendUrl}/api/listing/get?${searchQuery}`);
         const data = await res.json();
         if (data.length < 9) {
             setShowMore(false)

@@ -12,7 +12,6 @@ RUN npm install
 
 # Kopiere Anwendungscode
 COPY . .
-COPY .env ./
 
 
 # Exponiere den Port

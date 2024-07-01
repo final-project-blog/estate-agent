@@ -22,9 +22,12 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_KEY }}
       run: |
         mkdir -p ~/.ssh
-        echo -n $SSH_KEY | base64 -d > ~/.ssh/id_rsa
+        echo "$SSH_KEY" > ~/.ssh/id_rsa | 
         chmod 600 ~/.ssh/id_rsa
         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
+          sudo yum update -y
+          sudo yum install -y docker
+          sudo service docker start
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0 &&
           sudo docker run -d -p 3000:3000 --name backend-container ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0
         "

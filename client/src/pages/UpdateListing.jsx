@@ -33,7 +33,7 @@ const CreateListing = () => {
     useEffect(() => {
         const fetchListing = async () => {
             const listingId = params.listingId;
-            const res = await fetch(`/api/listing/get/${listingId}`);
+            const res = await fetch(`http://3.121.231.45:3000/api/listing/get/${listingId}`);
             const data = await res.json();
             if (data.success === false) {
                 return;
@@ -46,7 +46,7 @@ const CreateListing = () => {
     
 
     const getDownloadUrl = async (fileKey) => {
-        const result = await fetch(`/api/images/Url/${fileKey}`)
+        const result = await fetch(`http://3.121.231.45:3000/api/images/Url/${fileKey}`)
         const data = await result.json()
         return data.imageUrl
     }
@@ -86,7 +86,7 @@ const CreateListing = () => {
 
     const handleRemoveImage = async (index) => {
 
-        await fetch(`/api/images/delete/${formData.imageKeys[index]}`, {
+        await fetch(`http://3.121.231.45:3000/api/images/delete/${formData.imageKeys[index]}`, {
             method: 'DELETE'
         });
         setFormData({
@@ -125,7 +125,7 @@ const CreateListing = () => {
             if (+formData.regularPrice < +formData.discountPrice) return setError("Discount price must be lower than regular price")
             setLoading(true);
             setError(false);
-            const res = await fetch(`/api/listing/update/${params.listingId}`, {
+            const res = await fetch(`http://3.121.231.45:3000/api/listing/update/${params.listingId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

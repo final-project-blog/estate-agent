@@ -27,7 +27,7 @@ const CreateListing = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const getDownloadUrl = async (fileKey) => {
-        const response = await fetch(`/api/images/Url/${fileKey}`)
+        const response = await fetch(`http://3.121.231.45:3000/api/images/Url/${fileKey}`)
         const result = await response.json()
         return result.imageUrl
     }
@@ -65,7 +65,7 @@ const CreateListing = () => {
 
     const handleRemoveImage = async (index) => {
 
-        await fetch(`/api/images/delete/${formData.imageKeys[index]}`, {
+        await fetch(`http://3.121.231.45:3000/api/images/delete/${formData.imageKeys[index]}`, {
             method: 'DELETE'
         });
         setFormData({
@@ -104,7 +104,7 @@ const CreateListing = () => {
             if (+formData.regularPrice < +formData.discountPrice) return setError("Discount price must be lower than regular price")
             setLoading(true);
             setError(false);
-            const res = await fetch("/api/listing/create", {
+            const res = await fetch("http://3.121.231.45:3000/api/listing/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

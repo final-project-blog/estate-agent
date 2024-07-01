@@ -22,7 +22,7 @@ const SignUp = () => {
       return;
     }
     try {
-      const res = await fetch("api/auth/signup",
+      const res = await fetch("http://3.121.231.45:3000/api/auth/signup",
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

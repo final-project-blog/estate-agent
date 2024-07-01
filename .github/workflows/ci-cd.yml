@@ -100,9 +100,14 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.MY_EC2_SSH_KEY }}
           script: |
-            ssh -i "estateagent.pem" ec2-user@ec2-18-184-52-77.eu-central-1.compute.amazonaws.com
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest
-            sudo docker stop estate-agent-backend || true
-            sudo docker rm estate-agent-backend || true
-            sudo docker run -d -p 3000:3000 --name estate-agent-backend ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest
-          
+            - name: Install Docker on EC2
+          run: |
+            echo "$SSH_PRIVATE_KEY" > ./private_key.pem
+            chmod 600 ./private_key.pem
+            ssh -i ./private_key.pem -o StrictHostKeyChecking=no $EC2_HOST "
+            sudo yum update -y
+            sudo yum install -y docker
+            sudo service docker start
+            sudo docker run -d -p 80:5000 $DOCKER_USERNAME/estate-agent-backend:latest
+            "
+           

@@ -1,25 +1,22 @@
-# docker-compose.yml
-version: "3.8"
-services:
-  frontend:
-    build: ./client
-    ports:
-      - "5173:80"
-    depends_on:
-      - backend
-    environment:
-      - BACKEND_URL=https://docker.compose.local/
+version: '3.8'
 
+services:
   backend:
     build: ./api
     ports:
       - "3000:3000"
-
-  proxy:
-    image: nginx:alpine
-    ports:
-      - 80:80
+    env_file:
+      - api/.env  
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./api:/app  
+
+  frontend:
+    build: ./client
+    ports:
+      - "5173:80"
+    env_file:
+      - client/.env  
+    environment:
+      - BACKEND_URL=http://backend:3000
     depends_on:
-      - frontend
+      - backend

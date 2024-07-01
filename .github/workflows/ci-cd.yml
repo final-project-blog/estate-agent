@@ -102,7 +102,7 @@ jobs:
           script: |
             - name: Install Docker on EC2
           run: |
-            echo "$SSH_PRIVATE_KEY" > ./private_key.pem
+            echo "${{ secrets.MY_EC2_SSH_KEY }}"> ./private_key.pem
             chmod 600 ./private_key.pem
             ssh -i ./private_key.pem -o StrictHostKeyChecking=no $EC2_HOST "
             sudo yum update -y
@@ -110,4 +110,6 @@ jobs:
             sudo service docker start
             sudo docker run -d -p 80:5000 $DOCKER_USERNAME/estate-agent-backend:latest
             "
+
+
            

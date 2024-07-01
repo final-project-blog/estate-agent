@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: estate-agent
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: estate-agent
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: estate-agent
+        tier: frontend
+    spec:
+      containers:
+        - name: estate-agent-frontend
+          image: nourajaz/frontend-image:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: BACKEND_URL
+              value: "http://api-estate-agent-backend-service:3000"
+
+
+

@@ -26,7 +26,7 @@ export default function Home() {
     const fetchOfferListings = async () => {
       try {
         console.log("backendurl:", `${backendUrl}/api/listing/get?offer=true&limit=4`)
-        const res = await fetch(`${backendUrl}/api/listing/get?offer=true&limit=4`);
+        const res = await fetch(`http://18.195.215.16:3000/api/listing/get?offer=true&limit=4`);
         const data = await res.json();
         const listingsWithImages = await getListingsWithImages(data);
         setOfferListings(listingsWithImages);
@@ -38,7 +38,7 @@ export default function Home() {
 
     const fetchRentListings = async () => {
       try {
-        const res = await fetch(`${backendUrl}/api/listing/get?type=rent&limit=4`);
+        const res = await fetch(`http://18.195.215.16:3000/api/listing/get?type=rent&limit=4`);
         const data = await res.json();
         const listingsWithImages = await getListingsWithImages(data);
         setRentListings(listingsWithImages);
@@ -50,7 +50,7 @@ export default function Home() {
 
     const fetchSaleListings = async () => {
       try {
-        const res = await fetch(`${backendUrl}/api/listing/get?type=sale&limit=4`);
+        const res = await fetch(`http://18.195.215.16:3000/api/listing/get?type=sale&limit=4`);
         const data = await res.json();
         const listingsWithImages = await getListingsWithImages(data);
         setSaleListings(listingsWithImages);

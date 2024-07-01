@@ -28,7 +28,7 @@ const Listing = () => {
         const fetchListing= async () => {
             try {
                 setLoading(true)
-                const response = await fetch(`${backendUrl}/api/listing/get/${params.listingId}`);
+                const response = await fetch(`http://18.195.215.16:3000/api/listing/get/${params.listingId}`);
                 const data = await response.json()
                 if (data.success === false) {
                     setError(true)

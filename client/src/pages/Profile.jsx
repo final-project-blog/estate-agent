@@ -40,7 +40,7 @@ export default function Profile() {
   const handleDeleteAccount = async () => {
     try {
       dispatch(deleteUserStart());
-      const listingsRes = await fetch(`${backendUrl}/api/user/listings/${currentUser._id}`);
+      const listingsRes = await fetch(`http://18.195.215.16:3000/api/user/listings/${currentUser._id}`);
       const userListings = await listingsRes.json();
       if (userListings.success === false) {
       setShowListingsError(true);
@@ -49,15 +49,15 @@ export default function Profile() {
       for (const listing of userListings) {
         const imageKeys = listing.imageKeys
         for (const key of imageKeys) {
-          await fetch(`${backendUrl}/api/images/delete/${key}`, {
+          await fetch(`http://18.195.215.16:3000/api/images/delete/${key}`, {
             method: 'DELETE',
           });
         }
-        await fetch(`${backendUrl}/api/listing/delete/${listing._id}`, {
+        await fetch(`http://18.195.215.16:3000/api/listing/delete/${listing._id}`, {
           method: 'DELETE',
         });
       }
-      const res = await fetch(`${backendUrl}/api/user/delete/${currentUser._id}`, {
+      const res = await fetch(`http://18.195.215.16:3000/api/user/delete/${currentUser._id}`, {
         method: 'DELETE',
       });
       const data = await res.json();
@@ -76,7 +76,7 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      const res = await fetch(`${backendUrl}/api/user/update/${currentUser._id}`, {
+      const res = await fetch(`http://18.195.215.16:3000/api/user/update/${currentUser._id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(signOutUserStart());
-      const res = await fetch(`${backendUrl}/api/auth/signout`);
+      const res = await fetch(`http://18.195.215.16:3000/api/auth/signout`);
       const data = await res.json();
       if (data.success === false) {
         dispatch(signOutUserFailure(data.message));
@@ -114,7 +114,7 @@ export default function Profile() {
   const handleShowListings = async () => {
     try {
       setShowListingsError(false);
-      const res = await fetch(`${backendUrl}/api/user/listings/${currentUser._id}`)
+      const res = await fetch(`http://18.195.215.16:3000/api/user/listings/${currentUser._id}`)
       const data = await res.json();
       if (data.success === false) {
         setShowListingsError(true);
@@ -134,7 +134,7 @@ export default function Profile() {
         if (!listingToDelete) {
           throw new Error("Listing not found");
         }
-      const res = await fetch(`${backendUrl}/api/listing/delete/${listingId}`, {
+      const res = await fetch(`http://18.195.215.16:3000/api/listing/delete/${listingId}`, {
         method: 'DELETE',
       });
       const data = await res.json();
@@ -143,7 +143,7 @@ export default function Profile() {
       }
 
       await Promise.all(listingToDelete.imageKeys.map(async (imageKey) => {
-        await fetch(`${backendUrl}/api/images/delete/${imageKey}`, {
+        await fetch(`http://18.195.215.16:3000/api/images/delete/${imageKey}`, {
           method: 'DELETE'
         });
       }));

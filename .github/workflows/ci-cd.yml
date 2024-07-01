@@ -94,7 +94,7 @@ jobs:
 
       - name: Deploy backend to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} '
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.EC2_HOST }} '
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/estate-agent-backend:latest &&
             sudo docker stop backend-container || true &&
             sudo docker rm backend-container || true &&

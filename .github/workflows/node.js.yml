@@ -22,12 +22,9 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_KEY }}
       run: |
         cd api
-        pwd
-        ls
         mkdir -p ~/.ssh
         echo "$SSH_KEY" > ~/.ssh/id_rsa | 
         chmod 600 ~/.ssh/id_rsa
-        scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-env-file ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~/docker-env-file
         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAMED }}@${{ secrets.HOST }} "
           sudo yum update -y
           sudo yum install -y docker
@@ -35,7 +32,19 @@ jobs:
           sudo docker stop backend-container || true
           sudo docker rm backend-container || true
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0 &&
-          sudo docker run -d -p 3000:3000 --name backend-container --env-file docker-env-file ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0
+          sudo docker run -d -p 3000:3000 --name backend-container /
+          --env MONGO_URI --env JWT_SECRET --env GOOGLE_CLIENT_ID /
+          --env GOOGLE_CLIENT_SECRET --env SESSION_SECRET /
+          --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY /
+          --env AWS_SESSION_TOKEN --env AWS_BUCKET_NAME --env AWS_BUCKET_REGION /
+          ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0 env | grep MONGO_URI=${{ secrets.MONGO_URI }} /
+          JWT_SECRET=${{ secrets.JWT_SECRET }} GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} /
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} SESSION_SECRET=${{ secrets.SESSION_SECRET }} /
+          AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} /
+          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} /
+          AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }} /
+          AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} /
+          AWS_BUCKET_REGION=${{ secrets.AWS_REGION }}
         "
   build-frontend:
     runs-on: ubuntu-latest

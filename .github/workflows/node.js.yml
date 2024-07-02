@@ -47,7 +47,7 @@ jobs:
           --env GOOGLE_CLIENT_SECRET --env SESSION_SECRET /
           --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY /
           --env AWS_SESSION_TOKEN --env AWS_BUCKET_NAME --env AWS_BUCKET_REGION /
-          ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0 env
+          ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0
         "
   build-frontend:
     runs-on: ubuntu-latest

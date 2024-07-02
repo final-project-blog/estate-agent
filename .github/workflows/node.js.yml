@@ -21,10 +21,11 @@ jobs:
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
       run: |
+        cd api
         mkdir -p ~/.ssh
         echo "$SSH_KEY" > ~/.ssh/id_rsa | 
         chmod 600 ~/.ssh/id_rsa
-        scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./api/docker-env-file ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~/docker-env-file
+        scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-env-file ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~/docker-env-file
         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
           sudo yum update -y
           sudo yum install -y docker

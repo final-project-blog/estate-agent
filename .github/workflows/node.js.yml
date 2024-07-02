@@ -29,6 +29,7 @@ jobs:
           sudo yum update -y
           sudo yum install -y docker
           sudo service docker start
+          docker --version
           sudo docker stop backend-container || true
           sudo docker rm backend-container || true
           export MONGO_URI=${{ secrets.MONGO_URI}}

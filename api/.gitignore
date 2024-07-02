@@ -25,4 +25,4 @@ uploads
 *.sln
 *.sw?
 .env
-docker.env
+docker-env-file

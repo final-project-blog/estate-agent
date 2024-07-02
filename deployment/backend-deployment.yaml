@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-estate-agent-backend
+  name: backend-deployment
   labels:
     app: estate-agent
     tier: backend
@@ -18,12 +18,17 @@ spec:
         tier: backend
     spec:
       containers:
-        - name: api-estate-agent-backend
-          image: 514011952473.dkr.ecr.eu-central-1.amazonaws.com/api-estate-agent-backend:latest
+        - name: backend
+          image: nourajaz/backend-image:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           env:
             - name: MONGO_URI
-              value: mongodb:MONGO_URI=mongodb+srv://engahmadalebrahim:HoBt5fShJm7jycY6@estate-agent.6f9v6zh.mongodb.net/?retryWrites=true&w=majority&appName=estate-agent
+              value: "mongodb://engahmadalebrahim:HoBt5fShJm7jycY6@estate-agent.6f9v6zh.mongodb.net/?retryWrites=true&w=majority&appName=estate-agent"
             - name: JWT_SECRET
-              value: "123kjklasdljdic"
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: jwt-secret
+

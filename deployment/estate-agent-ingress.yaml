@@ -2,25 +2,23 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: estate-agent-ingress
-  namespace: default
 spec:
-  ingressClassName: nginx
+  tls:
+    - hosts:
+        - acc61c1dfd2c644bfa7a42ef8780c99a-1030160139.eu-central-1.elb.amazonaws.com  # Hier den Hostnamen eintragen, für den das Zertifikat gilt
+      secretName: example-com-tls-6bdl6  # Name des erstellten TLS-Secrets
   rules:
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: estate-agent-frontend
-            port:
-              number: 80
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: estate-agent-backend
-            port:
-              number: 3000
+    - host: acc61c1dfd2c644bfa7a42ef8780c99a-1030160139.eu-central-1.elb.amazonaws.com  
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: estate-agent-frontend-service  
+                port:
+                  number: 80  
+
+
 
 

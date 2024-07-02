@@ -24,7 +24,7 @@ jobs:
         mkdir -p ~/.ssh
         echo "$SSH_KEY" > ~/.ssh/id_rsa | 
         chmod 600 ~/.ssh/id_rsa
-        scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./api/docker.env ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~/api/docker.env
+        scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa /api/docker.env ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~/api/docker.env
         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
           sudo yum update -y
           sudo yum install -y docker

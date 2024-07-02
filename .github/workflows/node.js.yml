@@ -26,12 +26,6 @@ jobs:
         echo "$SSH_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
-          sudo yum update -y
-          sudo yum install -y docker
-          sudo service docker start
-          docker --version
-          sudo docker stop backend-container || true
-          sudo docker rm backend-container || true
           export MONGO_URI=${{ secrets.MONGO_URI}}
           export JWT_SECRET=${{ secrets.JWT_SECRET }}
           export GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}

@@ -22,18 +22,20 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_KEY }}
       run: |
         cd api
+        pwd
+        ls
         mkdir -p ~/.ssh
         echo "$SSH_KEY" > ~/.ssh/id_rsa | 
         chmod 600 ~/.ssh/id_rsa
         scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-env-file ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~/docker-env-file
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAMED }}@${{ secrets.HOST }} "
           sudo yum update -y
           sudo yum install -y docker
           sudo service docker start
           sudo docker stop backend-container || true
           sudo docker rm backend-container || true
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0 &&
-          sudo docker run -d -p 3000:3000 --name backend-container --env-file ./docker-env-file ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0
+          sudo docker run -d -p 3000:3000 --name backend-container --env-file docker-env-file ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0
         "
   build-frontend:
     runs-on: ubuntu-latest

@@ -23,7 +23,7 @@ jobs:
       run: |
         cd api
         mkdir -p ~/.ssh
-        echo "$SSH_KEY" > ~/.ssh/id_rsa | 
+        echo "$SSH_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
           sudo yum update -y
@@ -42,11 +42,11 @@ jobs:
           export AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}
           export AWS_BUCKET_REGION=${{ secrets.AWS_REGION }}
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0 &&
-          sudo docker run -d -p 3000:3000 --name backend-container /
-          --env MONGO_URI --env JWT_SECRET --env GOOGLE_CLIENT_ID /
-          --env GOOGLE_CLIENT_SECRET --env SESSION_SECRET /
-          --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY /
-          --env AWS_SESSION_TOKEN --env AWS_BUCKET_NAME --env AWS_BUCKET_REGION /
+          sudo docker run -d -p 3000:3000 --name backend-container \
+          --env MONGO_URI --env JWT_SECRET --env GOOGLE_CLIENT_ID \
+          --env GOOGLE_CLIENT_SECRET --env SESSION_SECRET \
+          --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY \
+          --env AWS_SESSION_TOKEN --env AWS_BUCKET_NAME --env AWS_BUCKET_REGION \
           ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0
         "
   build-frontend:

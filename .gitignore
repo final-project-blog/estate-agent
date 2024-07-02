@@ -26,3 +26,4 @@ images
 .env
 *.docx
 .terraform
+*.txt

@@ -43,15 +43,13 @@ const CreateListing = () => {
                 const keys = await Promise.all(keyPromises);
                 const updatedKeys = formData.imageKeys.concat(keys);
                 setFormData(prevFormData => ({ ...prevFormData, imageKeys: updatedKeys }));
-    
                 const urlPromises = [];
-                for (let j = 0; j < updatedKeys.length; j++) {
-                    urlPromises.push(getDownloadUrl(updatedKeys[j]));
+                for (let j = 0; j < keys.length; j++) {
+                    urlPromises.push(getDownloadUrl(keys[j]));
                 }
                 const urls = await Promise.all(urlPromises);
                 const updatedUrls = formData.imageUrls.concat(urls);
                 setFormData(prevFormData => ({ ...prevFormData, imageUrls: updatedUrls }));
-
                 setImageUploadError(false);
                 setUploading(false);
             } catch (error) {

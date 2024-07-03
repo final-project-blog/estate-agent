@@ -23,10 +23,13 @@ const signup = async (req, res, next) => {
 
 const signin = async (req, res, next) => {
     const { email, password } = req.body;
+    console.log(req.body);
     try {
       const validUser = await User.findOne({ email });
+      console.log("validUser",validUser);
       if (!validUser) return next(errorHandler(404, "User not found"));
       const validPassword = bcrypt.compareSync(password, validUser.password);
+      console.log("validPassword", validPassword);
       if (!validPassword) return next(errorHandler(401, "Wrong credentials!"));
       const token = jwt.sign({ _id: validUser._id }, process.env.JWT_SECRET);
       const { password: pass, ...rest } = validUser._doc;

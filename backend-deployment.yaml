@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  labels:
+    app: estate-agent
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: estate-agent
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: estate-agent
+        tier: backend
+    spec:
+      containers:
+        - name: backend
+          image: nourajaz/backend-image:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            - name: MONGO_URI
+              value: "mongodb+srv://engahmadalebrahim:HoBt5fShJm7jycY6@estate-agent.6f9v6zh.mongodb.net/?retryWrites=true&w=majority&appName=estate-agent"
+            - name: JWT_SECRET
+              value: "123kjklasdljdic"
+            - name: GOOGLE_CLIENT_ID
+              value: "381942616997-maus40lu5qph3gbm63og7ri2753ncsca.apps.googleusercontent.com"
+            - name: GOOGLE_CLIENT_SECRET
+              value: "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"
+            - name: AWS_BUCKET_NAME
+              value: "estate-agent-upload-bucket"
+            - name: AWS_BUCKET_REGION
+              value: "eu-central-1"
+

@@ -26,3 +26,5 @@ images
 .env
 *.docx
 .terraform
+*.txt
+docker-env-file

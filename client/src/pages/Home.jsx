@@ -16,8 +16,6 @@ export default function Home() {
   const [rentListings, setRentListings] = useState([]);
   
   SwiperCore.use([Navigation]);
-  const backendUrl = import.meta.env.VITE_BACKEND_URL
-  console.log("backeneurl:", backendUrl);
   
   
   

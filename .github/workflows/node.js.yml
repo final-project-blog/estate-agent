@@ -16,7 +16,7 @@ jobs:
         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
           sudo yum update -y
           sudo yum install -y docker
-          ssudo systemctl start docker
+          sudo systemctl start docker
           sudo docker stop backend-container || true
           sudo docker rm backend-container || true
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend:1.0.0 &&

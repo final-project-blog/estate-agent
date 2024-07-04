@@ -57,7 +57,7 @@ const signin = async (req, res, next) => {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: "/api/auth/google/callback"
   },
-  async function(accessToken, refreshToken, profile, cb) {
+  async function(accessToken, refreshToken, profile, done) {
     try {
     let user = await User.findOne({ email: profile.emails[0].value });
       if (!user) {

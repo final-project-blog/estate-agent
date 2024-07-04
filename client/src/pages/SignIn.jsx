@@ -24,7 +24,7 @@ export default function SignIn() {
     try {
       console.log("signinFormData",formData);
       dispatch(signInStart());
-      const res = await fetch('/api/auth/signin', {
+      const res = await fetch('http://3.79.18.231:3000/api/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

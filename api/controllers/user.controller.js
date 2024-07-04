@@ -4,16 +4,10 @@ import Listing from '../models/listing.model.js'
 import errorHandler from '../utils/error.js'
 
 export const test = (req, res) => {
-    try {
-        
-        throw errorHandler(500, 'Internal Server Error');
-    } catch (error) {
-        console.error('Caught error:', error);
-        res.status(error.statusCode || 500).json({
-            message: error.message || 'An unknown error occurred',
-        });
-    }
-};
+    res.json({
+      message: 'Api route is working!',
+    });
+  };
 
 export const updateUser = async (req, res, next) => {
     if (req.user._id !== req.params.id) {

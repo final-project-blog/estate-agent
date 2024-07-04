@@ -22,7 +22,7 @@ const SignUp = () => {
       return;
     }
     try {
-      const res = await fetch(`http://18.185.114.0:3000/api/auth/signup`,
+      const res = await fetch(`http://3.79.18.231:3000/api/auth/signup`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

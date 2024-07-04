@@ -19,7 +19,15 @@ mongoose.connect(process.env.MONGO_URI)
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: '*', 
+  credentials: true, // allows cookies to be sent
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Set-Cookie']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

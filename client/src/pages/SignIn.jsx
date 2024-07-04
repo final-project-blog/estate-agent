@@ -23,7 +23,7 @@ export default function SignIn() {
     e.preventDefault();
     try {
       dispatch(signInStart());
-      const res = await fetch(`http://3.124.217.171:3000/api/auth/signin`, {
+      const res = await fetch(`http://18.185.114.0:3000/api/auth/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

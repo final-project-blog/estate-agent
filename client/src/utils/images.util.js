@@ -4,7 +4,7 @@ export const getListingsWithImages = async (data) => {
     if (Array.isArray(data)) {
         return await Promise.all(data.map(async (listing) => {
             const imageUrls = await Promise.all(listing.imageKeys.map(async (imageKey) => {
-            const imageRes = await fetch(`http://3.124.217.171:3000/api/images/Url/${imageKey}`);
+            const imageRes = await fetch(`http://18.185.114.0:3000/api/images/Url/${imageKey}`);
             const imageData = await imageRes.json();
             return imageData.imageUrl;
             }));
@@ -12,7 +12,7 @@ export const getListingsWithImages = async (data) => {
         }));
     } else {
         const imageUrls = await Promise.all(data.imageKeys.map(async (imageKey) => {
-        const imageRes = await fetch(`http://3.124.217.171:3000/api/images/Url/${imageKey}`);
+        const imageRes = await fetch(`http://18.185.114.0:3000/api/images/Url/${imageKey}`);
         const imageData = await imageRes.json();
         return imageData.imageUrl;
         }));

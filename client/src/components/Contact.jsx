@@ -13,7 +13,7 @@ function Contact({listing}) {
     useEffect(() => {
         const fetchLandlord = async () => {
             try {
-                const res = await fetch(`http://18.195.215.16:3000/api/user/${listing.userRef}`)
+                const res = await fetch(`http://18.185.114.0:3000/api/user/${listing.userRef}`)
                 const data = await res.json()
                 setLandlord(data)
             } catch (error) {

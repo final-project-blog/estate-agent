@@ -15,6 +15,8 @@ export const getListingsWithImages = async (data) => {
         const imageUrls = await Promise.all(data.imageKeys.map(async (imageKey) => {
         const imageRes = await fetch(`/api/images/Url/${imageKey}`);
         const imageData = await imageRes.json();
+        console.log("imageData", imageData);
+        console.log("imageDataUrl", imageData.imageUrl);
         return imageData.imageUrl;
         }));
         return { ...data, imageUrls };

@@ -34,7 +34,7 @@ const signin = async (req, res, next) => {
       const token = await jwt.sign({ _id: validUser._id }, process.env.JWT_SECRET);
       const { password: pass, ...rest } = validUser._doc;
       res
-        .cookie('access_token', token, { httpOnly: true })
+        .cookie('access_token', token, { httpOnly: true, domain: amazonaws.com, samesite : 'lax', secure : false })
         .status(200)
         .json(rest);
     } catch (error) {

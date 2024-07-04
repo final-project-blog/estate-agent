@@ -31,7 +31,7 @@ const signin = async (req, res, next) => {
       const validPassword = bcrypt.compareSync(password, validUser.password);
       console.log("validPassword", validPassword);
       if (!validPassword) return next(errorHandler(401, "Wrong credentials!"));
-      const token = jwt.sign({ _id: validUser._id }, process.env.JWT_SECRET);
+      const token = await jwt.sign({ _id: validUser._id }, process.env.JWT_SECRET);
       const { password: pass, ...rest } = validUser._doc;
       res
         .cookie('access_token', token, { httpOnly: true })

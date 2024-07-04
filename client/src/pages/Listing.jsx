@@ -27,7 +27,7 @@ const Listing = () => {
         const fetchListing= async () => {
             try {
                 setLoading(true)
-                const response = await fetch(`http://3.79.18.231:3000/api/listing/get/${params.listingId}`);
+                const response = await fetch(`http://ec2-3-79-18-231.eu-central-1.compute.amazonaws.com:3000/api/listing/get/${params.listingId}`);
                 const data = await response.json()
                 if (data.success === false) {
                     setError(true)

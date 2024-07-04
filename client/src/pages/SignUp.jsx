@@ -22,13 +22,14 @@ const SignUp = () => {
       return;
     }
     try {
-      const res = await fetch("http://3.79.18.231:3000/api/auth/signup",
+      const res = await fetch("http://ec2-3-79-18-231.eu-central-1.compute.amazonaws.com:3000/api/auth/signup",
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData)
     });
     const data = await res.json();
+    
         
     if (data.success === false) {
       setError("invalid Username or Email");

@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGO_URI)
 const app = express();
 
 const corsOptions = {
-  origin: '*', 
+  origin: 'http://estate-agent-frontend.s3-website.eu-central-1.amazonaws.com', 
   credentials: true, // allows cookies to be sent
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

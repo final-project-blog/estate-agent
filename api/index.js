@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-// import session from 'express-session';
-// import passport from 'passport';
+//import session from 'express-session';
+//import passport from 'passport';
 import authRouter from './routes/auth.route.js';
 import listingRouter from './routes/listing.route.js';
 import s3UrlRouter from './routes/s3.route.js'; // Ensure correct path
@@ -31,13 +31,13 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-// app.use(session({
-//   secret: 'Our little secret.',
-//   resave: false,
-//   saveUninitialized: false
-// }));
-// app.use(passport.initialize());
-// app.use(passport.session());
+app.use(session({
+   secret: 'Our little secret.',
+   resave: false,
+  saveUninitialized: false
+ }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/api/auth', authRouter);
 app.use('/api/listing', listingRouter);

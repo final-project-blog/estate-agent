@@ -21,7 +21,7 @@ const app = express();
 
 const corsOptions = {
   origin: '*', 
-  credentials: true, // allows cookies to be sent
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Set-Cookie']
@@ -43,6 +43,9 @@ app.use('/api/auth', authRouter);
 app.use('/api/listing', listingRouter);
 app.use('/api/images', s3UrlRouter);
 app.use('/api/user', userRouter);
+app.get('/api', (req, res) => {
+  res.send('API endpoint');
+});
 
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode || 500;

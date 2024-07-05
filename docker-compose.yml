@@ -4,14 +4,15 @@ services:
   frontend:
     build: ./client
     ports:
-      - "5173:80"
+      - "5173:8080"
     depends_on:
       - backend
-    environment:
-      - BACKEND_URL=https://docker.compose.local/
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
 
   backend:
     build: ./api
+    env_file: .env
     ports:
       - "3000:3000"
 
@@ -23,3 +24,4 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - frontend
+      - backend

@@ -1,3 +1,8 @@
+export const isValidImageFile = (file) => {
+    const mimeType = file.type.split('/')[0]; 
+    return mimeType === 'image';
+};
+
 export const getListingsWithImages = async (data) => {
     if (Array.isArray(data)) {
         console.log("data", data);

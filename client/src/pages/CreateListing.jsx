@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {useSelector} from "react-redux"
 import { useNavigate } from "react-router-dom";
-import { storeImage } from "../utils/images.util";
+import { storeImage, isValidImageFile } from "../utils/images.util";
 const CreateListing = () => {
 
     const navigate = useNavigate()
@@ -34,6 +34,13 @@ const CreateListing = () => {
     const UploadImages = async () => {
         setUploading(true);
         setImageUploadError(false);
+        const isValid = Array.from(files).every(isValidImageFile);
+
+        if (!isValid) {
+            setImageUploadError("Only image files are allowed.");
+            setUploading(false);
+            return;
+        }
         if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
             try {
                 const keyPromises = [];

@@ -4,16 +4,14 @@ metadata:
   name: estate-agent
   namespace: default
 spec:
-  project: estate-agent  # Projektname, in dem die Anwendung erstellt werden soll
-  source:
-    repoURL: https://github.com/final-project-blog/estate-agent.git
-    path: k8s  # Pfad innerhalb des Repositories zu den Kubernetes-Ressourcen
-    targetRevision: master
   destination:
-    server: https://kubernetes.default.svc
-    namespace: default
-  syncPolicy:
-    automated: {}
-  selfHeal: true
-  prune: true
+    server: https://192.168.49.2:8443  
+    namespace: default  
+  project: default  
+  source:
+    repoURL: https://github.com/final-project-blog/estate-agent.git  
+    path: ./k8s  
+    targetRevision: master 
+    automated:
+      prune: true  
 

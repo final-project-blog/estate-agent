@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - deploy-nginx-ec2
+      - deploy/nginx-ec2
 jobs:
   build-complete-app:
     runs-on: ubuntu-latest

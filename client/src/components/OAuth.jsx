@@ -4,7 +4,7 @@
 const OAuth = () => {
     const handleGoogleClick = async () => {
         try {
-            window.location.href = "http://localhost:3000/api/auth/google";
+            window.location.href = "/api/auth/google";
         } catch (error) {
             console.log(" could not connect to Google", error);
         }

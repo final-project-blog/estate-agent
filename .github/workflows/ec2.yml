@@ -17,6 +17,7 @@ jobs:
         echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> api/.env
         echo "AWS_BUCKET_REGION=${{ secrets.AWS_REGION }}" >> api/.env
         echo "PORT=${{ secrets.PORT }}" >> api/.env
+        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> api/.env
     - name:  build backend docker image
       run: |
         docker build -t backend:1.0.0 ./api

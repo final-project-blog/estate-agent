@@ -1,25 +1,66 @@
 name: CI/CD Pipeline
+
 on: [push]
 jobs:
-  build-complete-app:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: deploy-backend
-      env:
-        SSH_KEY: ${{ secrets.SSH_KEY }}
-      run: |
-        cd api
-        mkdir -p ~/.ssh
-        echo "$SSH_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.NGINX_EC2 }} "
-          sudo yum update -y
-          sudo yum install -y docker
-          sudo systemctl start docker
-          sudo docker stop backend-container || true
-          sudo docker rm backend-container || true
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend:1.0.2 &&
-          sudo docker run -d -p 3000:3000 --name backend-container ${{ secrets.DOCKER_USERNAME }}/backend:1.0.2
-          sudo docker images --filter 'dangling=true' --format '{{.ID}}' | xargs -r sudo docker rmi -f
-        "
+      - uses: actions/checkout@v4
+      - name: Install dependencies and build frontend
+        uses: actions/setup-node@v4
+      - run: |
+          cd client
+          npm install
+          npm run build
+
+      - name: Move build to backend folder
+        run: |
+          mv client/dist api/
+
+      - name: Create .env file for backend
+        run: |
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> api/.env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> api/.env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> api/.env
+          echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> api/.env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> api/.env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> api/.env
+          echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> api/.env
+          echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> api/.env
+          echo "AWS_BUCKET_REGION=${{ secrets.AWS_REGION }}" >> api/.env
+          echo "PORT=${{ secrets.PORT }}" >> api/.env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> api/.env
+
+      - name: Build app Docker image
+        run: |
+          docker build -t estate-agent:1.0.0 ./api
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Push app Docker image
+        run: |
+          docker tag estate-agent:1.0.0 ${{ secrets.DOCKER_USERNAME }}/estate-agent:1.0.0
+          docker push ${{ secrets.DOCKER_USERNAME }}/estate-agent:1.0.0
+
+      - name: Deploy to EC2
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.NGINX_EC2 }} "
+            sudo yum update -y
+            sudo yum install -y docker
+            sudo systemctl start docker
+            sudo docker stop estate-agent-container || true
+            sudo docker rm estate-agent-container || true
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/estate-agent:1.0.0
+            sudo docker run -d -p 3000:3000 --name estate-agent-container ${{ secrets.DOCKER_USERNAME }}/estate-agent:1.0.0
+            sudo docker images --filter 'dangling=true' --format '{{.ID}}' | xargs -r sudo docker rmi -f
+          "
+

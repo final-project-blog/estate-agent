@@ -5,8 +5,10 @@ metadata:
   namespace: default
 spec:
   selector:
-    app: backend
+    app: estate-agent
+    tier: backend
   ports:
     - protocol: TCP
       port: 3000
       targetPort: 3000
+

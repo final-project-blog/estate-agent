@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-config
+data:
+  mongodb.conf: |
+    # Hier füge den Inhalt deiner MongoDB-Konfigurationsdatei ein
+    # storage:
+    #   dbPath: "/bitnami/mongodb/data"
+    # systemLog:
+    #   destination: file
+    #   path: "/opt/bitnami/mongodb/logs/mongodb.log"
+    #   logAppend: true
+    # net:
+    #   bindIp: 0.0.0.0
+    #   port: 27017

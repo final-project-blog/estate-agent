@@ -2,20 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend-deployment
+  namespace: default
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-      app: frontend-deployment
-      tier: frontend   
+      app: frontend
   template:
     metadata:
       labels:
-        app: frontend-deployment
-        tier: frontend   
+        app: frontend
     spec:
       containers:
         - name: frontend
           image: nourajaz/frontend-image:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80

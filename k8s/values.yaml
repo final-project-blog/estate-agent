@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-mongodb
+  template:
+    metadata:
+      labels:
+        app: my-mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: docker.io/bitnami/mongodb:4.4.1
+          volumeMounts:
+            - name: mongodb-config
+              mountPath: /opt/bitnami/mongodb/conf
+              subPath: mongodb.conf
+      volumes:
+        - name: mongodb-config
+          configMap:
+            name: mongodb-config

@@ -1,32 +1,25 @@
-version: '3.8'
-
+# docker-compose.yml
+version: "3.8"
 services:
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.client
+    build: ./client
     ports:
-      - "3000:80"
+      - "5173:80"
     depends_on:
       - backend
+    environment:
+      - BACKEND_URL=https://docker.compose.local/
 
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.api
+    build: ./api
     ports:
-      - "5000:5000"
-    environment:
-      - DATABASE_URL=mongodb://mongodb:27017/estate-agent
-    depends_on:
-      - mongodb
+      - "3000:3000"
 
-  mongodb:
-    image: mongo:latest
+  proxy:
+    image: nginx:alpine
     ports:
-      - "27017:27017"
+      - 80:80
     volumes:
-      - mongo-data:/data/db
-
-volumes:
-  mongo-data:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend

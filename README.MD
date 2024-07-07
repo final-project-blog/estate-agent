@@ -76,7 +76,7 @@ including the Nginx configuration to deploy the complete application in one EC2
     sudo systemctl enable nginx
     ```
 
-### FEC2 Nginx Configuration
+### EC2 Nginx Configuration
 
 1. Edit the Nginx configuration file:
     ```sh
